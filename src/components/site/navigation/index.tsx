@@ -4,9 +4,6 @@ import Image from 'next/image'
 import React from 'react'
 import {
   SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
   UserButton,
 } from '@clerk/nextjs'
 import { ModeToggle } from '@/components/global/mode-toggle'

@@ -13,15 +13,20 @@ export default clerkMiddleware(
     const url = req.nextUrl;
     const search = url.searchParams.toString();
     const pathWithSearch = `${url.pathname}${search ? `?${search}` : ''}`;
-
+    
     // Root redirect to /site
     if (url.pathname === '/') {
       return NextResponse.redirect(new URL('/site', req.url));
     }
-
+    
     // 
     if (url.pathname === '/sign-in' || url.pathname === '/sign-up') {
       return NextResponse.redirect(new URL('/agency/sign-in', req.url));
+    }
+
+    // Protect private routes with auth
+    if (!isPublicRoute(req)) {
+      await auth.protect();
     }
 
     // Custom rewrite for subdomains
@@ -41,14 +46,9 @@ export default clerkMiddleware(
       return NextResponse.rewrite(new URL(pathWithSearch, req.url));
     }
 
-    // Protect private routes with auth
-    if (!isPublicRoute(req)) {
-      await auth.protect();
-    }
-
     return NextResponse.next();
   },
-  { debug: false } // Set true to see detailed logs during dev
+  { debug: true } // Set true to see detailed logs during dev
 );
 
 export const config = {
