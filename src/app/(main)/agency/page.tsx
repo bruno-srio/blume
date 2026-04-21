@@ -5,12 +5,8 @@ import { redirect } from 'next/navigation'
 import React from 'react'
 
 const Page = async () => {
-  const authUser = await currentUser()
-  if (!authUser) {
-    redirect('/sign-in')
-  }
-
   const agencyId = await verifyAndAcceptInvitation()
+  console.log('AGENCY ID', agencyId)
 
   const user = await getAuthUserDetails()
   return (

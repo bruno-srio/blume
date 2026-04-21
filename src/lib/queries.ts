@@ -1,10 +1,13 @@
 "use server";
 
-import { currentUser } from '@clerk/nextjs/server'
+import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import { db } from './db'
 import { redirect } from 'next/navigation';
 import { User } from '../generated/prisma/client'
-import { SubAccount } from '../generated/prisma/index';
+// import { User } from "@prisma/client";
+import { SubAccount, Notification, Agency } from '../generated/prisma/index';
+import { dark } from '@clerk/themes';
+import { use } from 'react';
 
 export const getAuthUserDetails = async () => {
   const user = await currentUser();
@@ -34,6 +37,22 @@ export const getAuthUserDetails = async () => {
   return userData
 }
 
+const getUser = async (authUser: any, subaccountId?: string) => {
+  if (!authUser) {
+    return db.user.findFirst({
+      where: {
+        Agency: {
+          SubAccount: { some: { id: subaccountId } },
+        },
+      },
+    });
+  }
+
+  return db.user.findUnique({
+    where: { email: authUser.emailAddresses[0].emailAddress },
+  });
+};
+
 export const saveActivityLogsNotification = async ({
   agencyId,
   description,
@@ -43,31 +62,59 @@ export const saveActivityLogsNotification = async ({
   description: string;
   subaccountId?: string;
 }) => {
+  
   const authUser = await currentUser();
+  // const userData = await getUser(authUser, subaccountId);
   let userData;
-  if (!authUser) {
-    const response = await db.user.findFirst({
-      where: {
-        Agency: { 
-          SubAccount: {
-            some: { id: subaccountId},
-          },
-      },
-    },
-  });
-  if (response) {
-    userData = response}
-  } 
-  else {
-      userData = await db.user.findUnique({
-        where: {
-          email: authUser?.emailAddresses[0].emailAddress,},
-      });
-  }
+
   if (!userData) {
-    console.log('Could not find a user');
-}
-}
+    const response = await db.user.findFirst({
+      where: {Agency : {SubAccount: {some: {id: subaccountId}}}},
+    })
+    if (response) {
+      userData = response
+    } 
+    else {
+      userData = await db.user.findUnique({where: {email: authUser?.emailAddresses[0].emailAddress}
+      })
+    }
+    if(!userData){
+      console.error('Could not find user for activity log');
+      return
+    }
+    // In case notification is assigned to subaccount the agencyId will be fetched to allow the notification to be displayed correctly in the UI
+    let foundAgencyId = agencyId
+    if(!foundAgencyId){
+      if(!subaccountId){
+        throw new Error('Either agency ID or subaccount ID must be provided');
+      }
+      const responde = await db.SubAccount.findUnique({
+        where: {id: subaccountId},
+      })
+      if (responde) foundAgencyId = responde.agencyId
+    }
+    if(subaccountId){
+      await db.Notification.create({
+        data: {
+          notification : description,
+          User: { connect: { id: userData.id } },
+          Agency: { connect: { id: foundAgencyId } },
+          SubAccount: { connect: { id: subaccountId } },
+        }
+      })
+    }
+    else {db.Notification.create({
+      data: {
+        notification : `${userData.name} | ${description}`,
+        User: { connect: { id: userData.id } },
+        Agency: { connect: { id: foundAgencyId } },
+      },
+    })}
+  }
+
+
+};
+
  
 export const createTeamUser = async (agencyId: string, user: User) => {
   if(user.role === 'AGENCY_OWNER'){
@@ -102,5 +149,31 @@ export const verifyAndAcceptInvitation = async () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     })
+
+    await saveActivityLogsNotification({
+      agencyId: invitationExists?.agencyId,
+      description: `Joined the team`,
+      subaccountId: undefined,
+    })
+
+
+    if(userDetails){
+      (await clerkClient()).users.updateUserMetadata(user.id, {
+        privateMetadata: {
+        role: userDetails.role || 'SUBACCOUNT_USER',
+        },
+      })
+      
+      await db.invitation.delete({
+        where: { email: userDetails.email },
+      })
+
+      return userDetails.agencyId
+    } else return null
+  } else {
+    const agency = await db.user.findUnique({
+      where: { email: user.emailAddresses[0].emailAddress },
+    })
+    return agency?.agencyId || null
   }
 }
