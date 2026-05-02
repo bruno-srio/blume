@@ -6,8 +6,7 @@ import { redirect } from 'next/navigation';
 import { User } from '../generated/prisma/client'
 // import { User } from "@prisma/client";
 import { SubAccount, Notification, Agency } from '../generated/prisma/index';
-import { dark } from '@clerk/themes';
-import { use } from 'react';
+
 
 export const getAuthUserDetails = async () => {
   const user = await currentUser();
@@ -35,7 +34,7 @@ export const getAuthUserDetails = async () => {
   })
 
   return userData
-}
+};
 
 const getUser = async (authUser: any, subaccountId?: string) => {
   if (!authUser) {
@@ -62,67 +61,93 @@ export const saveActivityLogsNotification = async ({
   description: string;
   subaccountId?: string;
 }) => {
-  
   const authUser = await currentUser();
-  // const userData = await getUser(authUser, subaccountId);
   let userData;
-
-  if (!userData) {
+  // console.log('authUser', authUser);
+  
+  if (!authUser) {
     const response = await db.user.findFirst({
-      where: {Agency : {SubAccount: {some: {id: subaccountId}}}},
-    })
+      where: { Agency: { SubAccount: { some: { id: subaccountId } } } },
+    });
+
     if (response) {
-      userData = response
-    } 
-    else {
-      userData = await db.user.findUnique({where: {email: authUser?.emailAddresses[0].emailAddress}
-      })
+      userData = response;
     }
-    if(!userData){
-      console.error('Could not find user for activity log');
-      return
-    }
-    // In case notification is assigned to subaccount the agencyId will be fetched to allow the notification to be displayed correctly in the UI
-    let foundAgencyId = agencyId
-    if(!foundAgencyId){
-      if(!subaccountId){
-        throw new Error('Either agency ID or subaccount ID must be provided');
-      }
-      const responde = await db.SubAccount.findUnique({
-        where: {id: subaccountId},
-      })
-      if (responde) foundAgencyId = responde.agencyId
-    }
-    if(subaccountId){
-      await db.Notification.create({
-        data: {
-          notification : description,
-          User: { connect: { id: userData.id } },
-          Agency: { connect: { id: foundAgencyId } },
-          SubAccount: { connect: { id: subaccountId } },
-        }
-      })
-    }
-    else {db.Notification.create({
-      data: {
-        notification : `${userData.name} | ${description}`,
-        User: { connect: { id: userData.id } },
-        Agency: { connect: { id: foundAgencyId } },
+  } else {
+    userData = await db.user.findUnique({
+      where: {
+        email: authUser?.emailAddresses[0].emailAddress,
       },
-    })}
+    });
   }
 
+  if (!userData) {
+    console.log("Could not find a user");
+    return;
+  }
 
+  let foundAgencyId = agencyId;
+  if (!foundAgencyId) {
+    if (!subaccountId) {
+      throw new Error(
+        "You need to provide at least an agency Id or subaccount Id"
+      );
+    }
+    const response = await db.subAccount.findUnique({
+      where: { id: subaccountId },
+    });
+
+    // At times notifications are assigned to a subaccount, so we need to get the agency id from the subaccount
+    if (response) foundAgencyId = response.agencyId;
+  }
+
+  if (subaccountId) {
+    await db.notification.create({
+      data: {
+        notification: `${userData.name} | ${description}`,
+        User: {
+          connect: {
+            id: userData.id,
+          },
+        },
+        Agency: {
+          connect: {
+            id: foundAgencyId,
+          },
+        },
+        SubAccount: {
+          connect: {
+            id: subaccountId,
+          },
+        },
+      },
+    });
+  } else {
+    await db.notification.create({
+      data: {
+        notification: `${userData.name} | ${description}`,
+        User: {
+          connect: {
+            id: userData.id,
+          },
+        },
+        Agency: {
+          connect: {
+            id: foundAgencyId,
+          },
+        },
+      },
+    });
+  }
 };
 
- 
 export const createTeamUser = async (agencyId: string, user: User) => {
   if(user.role === 'AGENCY_OWNER'){
     return null 
   }
   const response = await db.user.create({ data: {...user}})
   return response
-}
+};
 
 
 export const verifyAndAcceptInvitation = async () => {
@@ -176,4 +201,4 @@ export const verifyAndAcceptInvitation = async () => {
     })
     return agency?.agencyId || null
   }
-}
+};
