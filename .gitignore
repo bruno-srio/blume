@@ -53,5 +53,6 @@ next-env.d.ts
 
 # editor
 .vscode/
+.cursor/
 *.swp
 *.swo
