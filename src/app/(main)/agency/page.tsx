@@ -3,6 +3,7 @@ import { Plan } from '@/generated/prisma/client'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import React from 'react'
+import AgencyDetails from '@/components/forms/agency-details'
 
 const Page = async ({searchParams}: {
   searchParams: {plan:Plan; state:string; code:string}}) => {
@@ -33,7 +34,7 @@ const Page = async ({searchParams}: {
     <div className='flex justify-center items-center mt-4'>
       <div className='max-w-[850px] border-[1px] p-4 rounded-xl'>
         <h1 className='text-4xl'>Create An Agency</h1>
-        <AgecyDetails data = {{companyEmail: authUser?.emailAddresses[0].emailAddress}} />
+        <AgencyDetails data = {{companyEmail: authUser?.emailAddresses[0].emailAddress}} />
       </div>
     </div>
   )

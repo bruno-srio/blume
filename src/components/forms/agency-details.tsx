@@ -6,38 +6,38 @@ import { useRouter } from 'next/navigation'
 import { AlertDialog } from '../ui/alert-dialog'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import FileUpload from '../global/file-upload';
 import { toast } from 'sonner'
+
 
 import * as z from 'zod'
 
 type Props = {
-    data?:Partial<Agency>
+  data?: Partial<Agency>
 }
-// try this one out later in production
-// const FormSchema = z.object({
-//     name: z.string().min(2, 'Agency name must be at least 2 characters long'),
-//     companyEmail: z.string().min(1, 'Company email is required').email('Invalid email address'),
-//     companyPhone: z.string().min(1, 'Company phone number is required').regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format'),
-//     whiteLabel: z.boolean(),
-//     address: z.string().min(1, 'Provide an address for your agency'),
-//     city: z.string().min(1, 'Provide a city for your agency'),
-//     state: z.string().min(1, 'Provide a state for your agency'),
-//     country: z.string().min(1, 'Provide a country for your agency'),
-//     agencyLogo: z.string().min(1),
-// })
 
 const FormSchema = z.object({
-  name: z.string().min(2, { message: "Agency name must be of 2 characters." }),
-  companyEmail: z.string().min(1),
-  companyPhone: z.string().min(1),
+  name: z.string()
+    .min(2, { message: "Agency name must be at least 2 characters long.",
+    }),
+  companyEmail: z.string()
+    .min(1, { message: "Company email is required." })
+    .email({ message: "Invalid email address." 
+    }),
+  companyPhone: z
+    .string()
+    .min(1, { message: "Company phone number is required." })
+    // Only digits (optional + at the start), 2–15 digits total, and the number can't start with 0.
+    .regex(/^\+?[1-9]\d{1,14}$/, { message: "Invalid phone number format.",
+    }),
   whiteLabel: z.boolean(),
-  address: z.string().min(1),
-  city: z.string().min(1),
-  zipCode: z.string().min(1),
-  state: z.string().min(1),
-  country: z.string().min(1),
-  agencyLogo: z.string().min(1),
+  address: z.string().min(1, { message: "Provide an address for your agency.",}),
+  city: z.string().min(1, { message: "Provide a city for your agency." }),
+  zipCode: z.string().min(1, { message: "Provide a postal or ZIP code for your agency.",}),
+  state: z.string().min(1, { message: "Provide a state for your agency." }),
+  country: z.string().min(1, { message: "Provide a country for your agency.",}),
+  agencyLogo: z.string().min(1, { message: "An agency logo is required.",}),
 });
 
 const AgencyDetails = ({ data }: Props) => {
@@ -114,14 +114,18 @@ const AgencyDetails = ({ data }: Props) => {
                                 control={form.control}
                                 name='agencyLogo'
                                 render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>Agency Logo</FormLabel>
-                                    <FormControl>
-                                        {/* <FileUpload></FileUpload> */}
-                                    </FormControl>
-                                </FormItem>
+                                  <FormItem>
+                                      <FormLabel>Agency Logo</FormLabel>
+                                      <FormControl>
+                                          <FileUpload
+                                              apiEndpoint='agencyLogo'
+                                              onChange={field.onChange}
+                                              value={field.value}
+                                          />
+                                      </FormControl>
+                                      <FormMessage />
+                                  </FormItem>
                                 )}
-
                             ></FormField>
                         </form>
                     </Form>
