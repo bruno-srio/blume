@@ -7,6 +7,7 @@ import { AlertDialog } from '../ui/alert-dialog'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { Input } from '../ui/input'
 import FileUpload from '../global/file-upload';
 import { toast } from 'sonner'
 
@@ -127,6 +128,49 @@ const AgencyDetails = ({ data }: Props) => {
                                   </FormItem>
                                 )}
                             />
+                            <div className='flex md:flex-row gap-4'>
+                                <FormField 
+                                  disabled= {isLoading} 
+                                  control={form.control}
+                                  name='name'
+                                  render={({field}) => (
+                                    <FormItem className='flex-1'>
+                                      <FormLabel>Agency Name</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder='Agency name' {...field} />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField 
+                                  disabled= {isLoading} 
+                                  control={form.control}
+                                  name='companyEmail'
+                                  render={({field}) => (
+                                    <FormItem className='flex-1'>
+                                      <FormLabel>Agency Email</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder='your@email.com' {...field} />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                            </div>
+                            <div className='flex md:flex-row gap-4'>
+                            <FormField
+                                  disabled= {isLoading} 
+                                  control={form.control}
+                                  name='companyPhone'
+                                  render={({field}) => (
+                                    <FormItem className='flex-1'>
+                                      <FormLabel>Agency Phone</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder='+1 (234) 567-8900' {...field} />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                            </div>
                         </form>
                     </Form>
                 </CardContent>
