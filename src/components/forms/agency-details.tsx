@@ -6,13 +6,14 @@ import { useRouter } from 'next/navigation'
 import { AlertDialog } from '../ui/alert-dialog'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 import FileUpload from '../global/file-upload';
 import { toast } from 'sonner'
 
 
 import * as z from 'zod'
+import { Switch } from '../ui/switch'
 
 type Props = {
   data?: Partial<Agency>
@@ -171,6 +172,32 @@ const AgencyDetails = ({ data }: Props) => {
                                   )}
                                 />
                             </div>
+                            <FormField
+                              disabled={isLoading}
+                              control={form.control}
+                              name="whiteLabel"
+                              render={({ field }) => {
+                                return (
+                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border gap-4 p-4">
+                                    <div>
+                                      <FormLabel>Whitelabel Agency</FormLabel>
+                                      <FormDescription>
+                                        Turning on whitelabel mode will show your agency logo
+                                        to all sub accounts by default. You can overwrite this
+                                        functionality through sub account settings.
+                                      </FormDescription>
+                                    </div>
+
+                                    <FormControl>
+                                      <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                );
+                              }}
+                            />
                         </form>
                     </Form>
                 </CardContent>
