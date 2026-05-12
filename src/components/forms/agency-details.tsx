@@ -126,7 +126,7 @@ const AgencyDetails = ({ data }: Props) => {
                                       <FormMessage />
                                   </FormItem>
                                 )}
-                            ></FormField>
+                            />
                         </form>
                     </Form>
                 </CardContent>
