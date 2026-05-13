@@ -198,6 +198,77 @@ const AgencyDetails = ({ data }: Props) => {
                                 );
                               }}
                             />
+                            <div className='flex md:flex-row gap-4'>
+                              <FormField
+                                disabled={isLoading}
+                                control={form.control}
+                                name="address"
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>Address</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder='123 Main St' {...field} />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <div className='flex md:flex-row gap-4'>
+                              <FormField
+                                disabled={isLoading}
+                                control={form.control}
+                                name="city"
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>City</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder='City name' {...field} />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                disabled={isLoading}
+                                control={form.control}
+                                name="zipCode"
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>Zip Code</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder='12345' {...field} />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                disabled={isLoading}
+                                control={form.control}
+                                name="state"
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>State</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder='State name' {...field} />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <div className='flex md:flex-row gap-4'>
+                              <FormField
+                                disabled={isLoading}
+                                control={form.control}
+                                name="country"
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>Country</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder='Country name' {...field} />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
                         </form>
                     </Form>
                 </CardContent>
