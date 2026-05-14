@@ -282,8 +282,8 @@ const AgencyDetails = ({ data }: Props) => {
                 <div className='flex flex-col gap-2'>
                   <FormLabel>Create a Goal</FormLabel>
                   <FormDescription>
-                    ✨ Create a goal for your agency. As your business grows
-                    your goals grow too so dont forget to set the bar higher!
+                    Set a milestone for your agency growth. Track your progress and raise
+                    the standard as your business evolves.
                   </FormDescription>
                   <NumberInput
                     defaultValue={data?.goal}
