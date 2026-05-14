@@ -4,14 +4,14 @@ import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import { db } from './db'
 import { redirect } from 'next/navigation';
 import { User } from '../generated/prisma/client'
-// import { User } from "@prisma/client";
 import { SubAccount, Notification, Agency } from '../generated/prisma/index';
 
 
 export const getAuthUserDetails = async () => {
   const user = await currentUser();
   if (!user) {
-    return
+    // Return null to avoid rendering the component if the user is not authenticated
+    return null;
   }
 
   const userData = await db.user.findUnique({
