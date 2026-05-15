@@ -1,13 +1,12 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import { useClerk } from '@clerk/nextjs'
 import { useForm } from 'react-hook-form'
+import React, { useEffect, useState } from 'react'
 import { Agency } from '@/generated/prisma/client'
 import { useRouter } from 'next/navigation'
-import { AlertDialog } from '../ui/alert-dialog'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { NumberInput } from '@tremor/react'
 import { toast } from 'sonner'
-
 
 
 import * as z from 'zod'
@@ -18,7 +17,23 @@ import { Switch } from '../ui/switch'
 import FileUpload from '../global/file-upload';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { updateAgencyDetails, saveActivityLogsNotification } from '@/lib/queries'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../ui/alert-dialog'
+
+import {
+  deleteAgency,
+  saveActivityLogsNotification,
+  updateAgencyDetails,
+} from '@/lib/queries'
 
 type Props = {
   data?: Partial<Agency>
@@ -52,6 +67,7 @@ const FormSchema = z.object({
 
 const AgencyDetails = ({ data }: Props) => {
   const router = useRouter();
+  const { signOut } = useClerk();
   const [deletingAgency, setDeletingAgency] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     mode: "onChange",
@@ -102,11 +118,28 @@ const AgencyDetails = ({ data }: Props) => {
           },
         }
       }
-    } 
+      //FIXME: implement the initUser function I still gotta do that, kinda tired right now. Handle submit also needs changes
+      // newUserData = await initUser({ role: 'AGENCY_OWNER'})
+    }
+
     catch {
       toast.error('Could not save agency details.')
     }
   }
+
+  const handleDeleteAgency = async () => {
+    if (!data?.id) return;
+    setDeletingAgency(true);
+    //TODO: discontinue the subscription
+    try {
+      await deleteAgency(data.id);
+      toast.success('Agency deleted.');
+      await signOut({ redirectUrl: '/agency/sign-in' });
+    } catch {
+      toast.error('Could not delete agency.');
+      setDeletingAgency(false);
+    }
+  };
 
   return (
     <AlertDialog>
@@ -299,15 +332,55 @@ const AgencyDetails = ({ data }: Props) => {
                     }}
                     min={1}
                     className="bg-background !border !border-input rounded-md"
-                      placeholder="Sub Account Goal"
-                    />
-                  </div>
-                )}
+                    placeholder="Sub Account Goal"
+                  />
+                </div>
+              )}
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? <Loading /> : "Save Agency Information"}
               </Button>
             </form>
           </Form>
+          {data?.id && (
+            <div className="flex flex-row items-center justify-center rounded-lg border border-destructive gap-4 p-4 mt-4">
+              <div>
+                <div>Danger Zone</div>
+              </div>
+              <div className="text-muted-foreground">
+                Deleting your agency cannot be undone. This will also delete all
+                sub accounts and all data related to your sub accounts. Sub
+                accounts will no longer have access to funnels, contacts etc.
+              </div>
+              <AlertDialogTrigger
+                disabled={isLoading || deletingAgency}
+                className="text-red-600 p-2 text-center mt-2 rounded-md hover:bg-red-600 hover:text-white whitespace-nowrap"
+              >
+                {deletingAgency ? "Deleting..." : "Delete Agency"}
+              </AlertDialogTrigger>
+            </div>
+          )}
+
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-left">
+                Are you absolutely sure?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-left">
+                This action cannot be undone. This will permanently delete the
+                Agency account and all related sub accounts.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex items-center">
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={deletingAgency}
+                className="bg-destructive hover:bg-destructive/80"
+                onClick={handleDeleteAgency}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
         </CardContent>
       </Card>
     </AlertDialog>

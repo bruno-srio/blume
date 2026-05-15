@@ -214,3 +214,30 @@ export const updateAgencyDetails = async (
 
   return response;
 };
+
+export const deleteAgency = async (agencyId: string) => {
+  const authUser = await currentUser();
+  const email = authUser?.emailAddresses[0]?.emailAddress;
+  if (!email) {
+    throw new Error('Unauthorized');
+  }
+
+  const dbUser = await db.user.findUnique({
+    where: { email },
+  });
+
+  if (
+    !dbUser?.agencyId ||
+    dbUser.agencyId !== agencyId ||
+    dbUser.role !== 'AGENCY_OWNER'
+  ) {
+    throw new Error('Forbidden');
+  }
+
+  await db.subscription.deleteMany({ where: { agencyId } });
+  await db.addOns.deleteMany({ where: { agencyId } });
+  await db.agency.delete({ where: { id: agencyId } });
+};
+
+//FIXME: implement the initUser function I still gotta do that, kinda tired right now. Handle submit also needs changes in agency-details.tsx
+// export const initUser
