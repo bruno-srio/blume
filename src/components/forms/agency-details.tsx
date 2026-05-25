@@ -33,7 +33,9 @@ import {
   deleteAgency,
   saveActivityLogsNotification,
   updateAgencyDetails,
+  initUser,
 } from '@/lib/queries'
+
 
 type Props = {
   data?: Partial<Agency>
@@ -95,6 +97,8 @@ const AgencyDetails = ({ data }: Props) => {
 
   const handleSubmit = async (values: z.infer<typeof FormSchema>) => {
     try {
+      //TODO: implement the upsertAgency function and finish the handleSubmit function comparing with the outdated code
+      let newUserData;
       if (!data?.id) {
         const bodyData = {
           email: values.companyEmail,
@@ -118,8 +122,7 @@ const AgencyDetails = ({ data }: Props) => {
           },
         }
       }
-      //FIXME: implement the initUser function I still gotta do that, kinda tired right now. Handle submit also needs changes
-      // newUserData = await initUser({ role: 'AGENCY_OWNER'})
+      newUserData = await initUser({ role: 'AGENCY_OWNER'})
     }
 
     catch {
