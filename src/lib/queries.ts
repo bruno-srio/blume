@@ -4,7 +4,7 @@ import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import { db } from './db'
 import { redirect } from 'next/navigation';
 import { User } from '../generated/prisma/client'
-import { SubAccount, Notification, Agency } from '../generated/prisma/index';
+import { SubAccount, Notification, Agency, Plan } from '../generated/prisma/index';
 
 
 export const getAuthUserDetails = async () => {
@@ -64,7 +64,7 @@ export const saveActivityLogsNotification = async ({
   const authUser = await currentUser();
   let userData;
   // console.log('authUser', authUser);
-  
+
   if (!authUser) {
     const response = await db.user.findFirst({
       where: { Agency: { SubAccount: { some: { id: subaccountId } } } },
@@ -142,10 +142,10 @@ export const saveActivityLogsNotification = async ({
 };
 
 export const createTeamUser = async (agencyId: string, user: User) => {
-  if(user.role === 'AGENCY_OWNER'){
-    return null 
+  if (user.role === 'AGENCY_OWNER') {
+    return null
   }
-  const response = await db.user.create({ data: {...user}})
+  const response = await db.user.create({ data: { ...user } })
   return response
 };
 
@@ -164,7 +164,7 @@ export const verifyAndAcceptInvitation = async () => {
   })
 
   if (invitationExists) {
-    const userDetails = await createTeamUser(invitationExists.agencyId,{
+    const userDetails = await createTeamUser(invitationExists.agencyId, {
       email: invitationExists.email,
       agencyId: invitationExists.agencyId,
       avatarUrl: user.imageUrl,
@@ -182,13 +182,13 @@ export const verifyAndAcceptInvitation = async () => {
     })
 
 
-    if(userDetails){
+    if (userDetails) {
       (await clerkClient()).users.updateUserMetadata(user.id, {
         privateMetadata: {
-        role: userDetails.role || 'SUBACCOUNT_USER',
+          role: userDetails.role || 'SUBACCOUNT_USER',
         },
       })
-      
+
       await db.invitation.delete({
         where: { email: userDetails.email },
       })
@@ -265,3 +265,61 @@ export const initUser = async (newUser: Partial<User>) => {
 
   return userData
 }
+
+//TODO: test this function and verify data registration, gotta go now; stripe integration needs to be done too eventually
+export const upsertAgency = async (agency: Agency, price?: Plan) => {
+  if (!agency.companyEmail) return null;
+  try {
+    const agencyDetails = await db.agency.upsert({
+      where: {
+        id: agency.id,
+      },
+      update: agency,
+      create: {
+        users: {
+          connect: {
+            email: agency.companyEmail,
+          },
+        },
+        ...agency,
+        SidebarOption: {
+          create: [
+            {
+              name: "Dashboard",
+              icon: "category",
+              link: `/agency/${agency.id}`,
+            },
+            {
+              name: "Sub Accounts",
+              icon: "person",
+              link: `/agency/${agency.id}/all-subaccounts`,
+            },
+            {
+              name: "Team",
+              icon: "shield",
+              link: `/agency/${agency.id}/team`,
+            },
+            {
+              name: "Launchpad",
+              icon: "clipboardIcon",
+              link: `/agency/${agency.id}/launchpad`,
+            },
+            {
+              name: "Billing",
+              icon: "payment",
+              link: `/agency/${agency.id}/billing`,
+            },
+            {
+              name: "Settings",
+              icon: "settings",
+              link: `/agency/${agency.id}/settings`,
+            },
+          ],
+        },
+      },
+    });
+    return agencyDetails;
+  } catch (error) {
+    console.log(error);
+  }
+};
