@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { NumberInput } from '@tremor/react'
 import { toast } from 'sonner'
-
+import { v4 } from 'uuid'
 
 import * as z from 'zod'
 import { Button } from '../ui/button'
@@ -34,6 +34,7 @@ import {
   saveActivityLogsNotification,
   updateAgencyDetails,
   initUser,
+  upsertAgency,
 } from '@/lib/queries'
 
 
@@ -99,6 +100,7 @@ const AgencyDetails = ({ data }: Props) => {
     try {
       //TODO: implement the upsertAgency function and finish the handleSubmit function comparing with the outdated code
       let newUserData;
+      let custId;
       if (!data?.id) {
         const bodyData = {
           email: values.companyEmail,
@@ -123,10 +125,36 @@ const AgencyDetails = ({ data }: Props) => {
         }
       }
       newUserData = await initUser({ role: 'AGENCY_OWNER'})
-    }
+      if (!data?.customerId && !custId) return;
 
-    catch {
-      toast.error('Could not save agency details.')
+      const response = await upsertAgency({
+        id: data?.id ? data.id : v4(),
+        customerId: data?.customerId || custId || "",
+        address: values.address,
+        agencyLogo: values.agencyLogo,
+        city: values.city,
+        companyPhone: values.companyPhone,
+        country: values.country,
+        name: values.name,
+        state: values.state,
+        whiteLabel: values.whiteLabel,
+        zipCode: values.zipCode,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        companyEmail: values.companyEmail,
+        connectAccountId: "",
+        goal: 5,
+      });
+      toast.success("Created Agency");
+      if (data?.id) return router.refresh();
+      if (response) {
+        return router.refresh();
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Oops!", {
+        description: "Could not create your agency",
+      });
     }
   }
 
