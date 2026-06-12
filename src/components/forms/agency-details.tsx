@@ -92,13 +92,14 @@ const AgencyDetails = ({ data }: Props) => {
 
   useEffect(() => {
     if (data) {
-      form.reset(data);
+      // Merge with current values: `data` may be partial (e.g. only companyEmail
+      // on first load) and a plain reset(data) would wipe every other field.
+      form.reset({ ...form.getValues(), ...data });
     }
   }, [data]);
 
   const handleSubmit = async (values: z.infer<typeof FormSchema>) => {
     try {
-      //TODO: implement the upsertAgency function and finish the handleSubmit function comparing with the outdated code
       let newUserData;
       let custId;
       if (!data?.id) {
@@ -125,7 +126,8 @@ const AgencyDetails = ({ data }: Props) => {
         }
       }
       newUserData = await initUser({ role: 'AGENCY_OWNER'})
-      if (!data?.customerId && !custId) return;
+      // Stripe customer creation isn't implemented yet (custId is never set),
+      // so don't block agency creation on a missing customerId.
 
       const response = await upsertAgency({
         id: data?.id ? data.id : v4(),
@@ -187,7 +189,6 @@ const AgencyDetails = ({ data }: Props) => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
               <FormField
-                disabled={isLoading}
                 control={form.control}
                 name='agencyLogo'
                 render={({ field }) => (
@@ -206,7 +207,6 @@ const AgencyDetails = ({ data }: Props) => {
               />
               <div className='flex md:flex-row gap-4'>
                 <FormField
-                  disabled={isLoading}
                   control={form.control}
                   name='name'
                   render={({ field }) => (
@@ -219,7 +219,6 @@ const AgencyDetails = ({ data }: Props) => {
                   )}
                 />
                 <FormField
-                  disabled={isLoading}
                   control={form.control}
                   name='companyEmail'
                   render={({ field }) => (
@@ -234,7 +233,6 @@ const AgencyDetails = ({ data }: Props) => {
               </div>
               <div className='flex md:flex-row gap-4'>
                 <FormField
-                  disabled={isLoading}
                   control={form.control}
                   name='companyPhone'
                   render={({ field }) => (
@@ -248,7 +246,6 @@ const AgencyDetails = ({ data }: Props) => {
                 />
               </div>
               <FormField
-                disabled={isLoading}
                 control={form.control}
                 name="whiteLabel"
                 render={({ field }) => {
@@ -275,7 +272,6 @@ const AgencyDetails = ({ data }: Props) => {
               />
               <div className='flex md:flex-row gap-4'>
                 <FormField
-                  disabled={isLoading}
                   control={form.control}
                   name="address"
                   render={({ field }) => (
@@ -290,7 +286,6 @@ const AgencyDetails = ({ data }: Props) => {
               </div>
               <div className='flex md:flex-row gap-4'>
                 <FormField
-                  disabled={isLoading}
                   control={form.control}
                   name="city"
                   render={({ field }) => (
@@ -303,7 +298,6 @@ const AgencyDetails = ({ data }: Props) => {
                   )}
                 />
                 <FormField
-                  disabled={isLoading}
                   control={form.control}
                   name="zipCode"
                   render={({ field }) => (
@@ -316,7 +310,6 @@ const AgencyDetails = ({ data }: Props) => {
                   )}
                 />
                 <FormField
-                  disabled={isLoading}
                   control={form.control}
                   name="state"
                   render={({ field }) => (
@@ -331,7 +324,6 @@ const AgencyDetails = ({ data }: Props) => {
               </div>
               <div className='flex md:flex-row gap-4'>
                 <FormField
-                  disabled={isLoading}
                   control={form.control}
                   name="country"
                   render={({ field }) => (
