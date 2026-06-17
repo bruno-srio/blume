@@ -14,7 +14,7 @@ import { Button } from '../ui/button'
 import Loading from '../global/loading'
 import { Input } from '../ui/input'
 import { Switch } from '../ui/switch'
-import FileUpload from '../global/file-upload';
+import FileUpload from '../global/file-upload'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import {
@@ -190,6 +190,7 @@ const AgencyDetails = ({ data }: Props) => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
               <FormField
+                disabled={isLoading}
                 control={form.control}
                 name='agencyLogo'
                 render={({ field }) => (
@@ -208,6 +209,7 @@ const AgencyDetails = ({ data }: Props) => {
               />
               <div className='flex md:flex-row gap-4'>
                 <FormField
+                  disabled={isLoading}
                   control={form.control}
                   name='name'
                   render={({ field }) => (
@@ -216,10 +218,12 @@ const AgencyDetails = ({ data }: Props) => {
                       <FormControl>
                         <Input placeholder='Agency name' {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
+                  disabled={isLoading}
                   control={form.control}
                   name='companyEmail'
                   render={({ field }) => (
@@ -228,12 +232,14 @@ const AgencyDetails = ({ data }: Props) => {
                       <FormControl>
                         <Input placeholder='your@email.com' {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
               <div className='flex md:flex-row gap-4'>
                 <FormField
+                  disabled={isLoading}
                   control={form.control}
                   name='companyPhone'
                   render={({ field }) => (
@@ -242,16 +248,18 @@ const AgencyDetails = ({ data }: Props) => {
                       <FormControl>
                         <Input placeholder='+1 (234) 567-8900' {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
               <FormField
+                disabled={isLoading}
                 control={form.control}
-                name="whiteLabel"
+                name='whiteLabel'
                 render={({ field }) => {
                   return (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border gap-4 p-4">
+                    <FormItem className='flex flex-row items-center justify-between rounded-lg border gap-4 p-4'>
                       <div>
                         <FormLabel>Whitelabel Agency</FormLabel>
                         <FormDescription>
@@ -273,66 +281,76 @@ const AgencyDetails = ({ data }: Props) => {
               />
               <div className='flex md:flex-row gap-4'>
                 <FormField
+                  disabled={isLoading}
                   control={form.control}
-                  name="address"
+                  name='address'
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className='flex-1'>
                       <FormLabel>Address</FormLabel>
                       <FormControl>
                         <Input placeholder='123 Main St' {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
               <div className='flex md:flex-row gap-4'>
                 <FormField
+                  disabled={isLoading}
                   control={form.control}
-                  name="city"
+                  name='city'
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className='flex-1'>
                       <FormLabel>City</FormLabel>
                       <FormControl>
                         <Input placeholder='City name' {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
+                  disabled={isLoading}
                   control={form.control}
-                  name="zipCode"
+                  name='zipCode'
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className='flex-1'>
                       <FormLabel>Zip Code</FormLabel>
                       <FormControl>
                         <Input placeholder='12345' {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
+                  disabled={isLoading}
                   control={form.control}
-                  name="state"
+                  name='state'
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className='flex-1'>
                       <FormLabel>State</FormLabel>
                       <FormControl>
                         <Input placeholder='State name' {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
               <div className='flex md:flex-row gap-4'>
                 <FormField
+                  disabled={isLoading}
                   control={form.control}
-                  name="country"
+                  name='country'
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className='flex-1'>
                       <FormLabel>Country</FormLabel>
                       <FormControl>
                         <Input placeholder='Country name' {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
