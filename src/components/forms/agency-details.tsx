@@ -129,8 +129,8 @@ const AgencyDetails = ({ data }: Props) => {
       }
       newUserData = await initUser({ role: 'AGENCY_OWNER'})
       //WIP: custId for stripe customer creation in
-      if (!data?.id) return;
-
+      if (!data?.id) return
+      // const agencyId = data?.id ? data.id : v4();
       const response = await upsertAgency({
         id: data?.id ? data.id : v4(),
         // customerId: data?.customerId || custId || "",
@@ -151,10 +151,14 @@ const AgencyDetails = ({ data }: Props) => {
       });
 
       toast.success("Created Agency");
-      if (data?.id) return router.refresh();
-      if (response) {
-        return router.refresh();
-      }
+      //FIX: this is not working, I commented it out previous attempts
+      // if (data?.id) return router.refresh();
+      // if (response) {
+      //   return router.refresh();
+      // }
+      //cursor second attempt of redirecting to the agency page
+      // router.push(`/agency/${response?.id ?? agencyId}`);
+      return router.refresh();
 
     } catch (error) {
       console.log(error);
