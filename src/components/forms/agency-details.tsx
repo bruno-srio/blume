@@ -87,13 +87,14 @@ const AgencyDetails = ({ data }: Props) => {
       country: data?.country,
       agencyLogo: data?.agencyLogo,
     },
-  });
-  const isLoading = form.formState.isSubmitting;
+  })
+  const isLoading = form.formState.isSubmitting
 
   useEffect(() => {
     if (data) {
       // Merge with current values: `data` may be partial (e.g. only companyEmail
       // on first load) and a plain reset(data) would wipe every other field.
+      // including the boolean `whiteLabel` default, making z.boolean() fail.
       // form.reset({ ...form.getValues(), ...data });
       form.reset(data);
     }
