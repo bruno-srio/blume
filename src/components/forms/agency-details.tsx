@@ -94,7 +94,8 @@ const AgencyDetails = ({ data }: Props) => {
     if (data) {
       // Merge with current values: `data` may be partial (e.g. only companyEmail
       // on first load) and a plain reset(data) would wipe every other field.
-      form.reset({ ...form.getValues(), ...data });
+      // form.reset({ ...form.getValues(), ...data });
+      form.reset(data);
     }
   }, [data]);
 
@@ -126,12 +127,12 @@ const AgencyDetails = ({ data }: Props) => {
         }
       }
       newUserData = await initUser({ role: 'AGENCY_OWNER'})
-      // Stripe customer creation isn't implemented yet (custId is never set),
-      // so don't block agency creation on a missing customerId.
+      //WIP: custId for stripe customer creation in
+      if (!data?.id) return;
 
       const response = await upsertAgency({
         id: data?.id ? data.id : v4(),
-        customerId: data?.customerId || custId || "",
+        // customerId: data?.customerId || custId || "",
         address: values.address,
         agencyLogo: values.agencyLogo,
         city: values.city,
