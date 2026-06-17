@@ -42,38 +42,38 @@ type Props = {
   data?: Partial<Agency>
 }
 
+const E164_PHONE_REGEX = /^\+?[1-9]\d{1,14}$/
+
+const requiredString = (requiredError: string) =>
+  z.string({ required_error: requiredError }).trim().min(1, requiredError)
+
 const FormSchema = z.object({
-  name: z.string()
-    .min(2, {
-      message: "Agency name must be at least 2 characters long.",
-    }),
-  companyEmail: z.string()
-    .min(1, { message: "Company email is required." })
-    .email({
-      message: "Invalid email address."
-    }),
-  companyPhone: z
-    .string()
-    .min(1, { message: "Company phone number is required." })
-    // Only digits (optional + at the start), 2–15 digits total, and the number can't start with 0.
-    .regex(/^\+?[1-9]\d{1,14}$/, {
-      message: "Invalid phone number format.",
-    }),
+  name: requiredString('Agency name is required.').min(
+    2,
+    'Agency name must be at least 2 characters long.'
+  ),
+  companyEmail: requiredString('Company email is required.').email(
+    'Invalid email address.'
+  ),
+  companyPhone: requiredString('Company phone number is required.').regex(
+    E164_PHONE_REGEX,
+    'Invalid phone number format.'
+  ),
   whiteLabel: z.boolean(),
-  address: z.string().min(1, { message: "Provide an address for your agency.", }),
-  city: z.string().min(1, { message: "Provide a city for your agency." }),
-  zipCode: z.string().min(1, { message: "Provide a postal or ZIP code for your agency.", }),
-  state: z.string().min(1, { message: "Provide a state for your agency." }),
-  country: z.string().min(1, { message: "Provide a country for your agency.", }),
-  agencyLogo: z.string().min(1, { message: "An agency logo is required.", }),
-});
+  address: requiredString('Provide an address for your agency.'),
+  city: requiredString('Provide a city for your agency.'),
+  zipCode: requiredString('Provide a postal or ZIP code for your agency.'),
+  state: requiredString('Provide a state for your agency.'),
+  country: requiredString('Provide a country for your agency.'),
+  agencyLogo: requiredString('An agency logo is required.'),
+})
 
 const AgencyDetails = ({ data }: Props) => {
-  const router = useRouter();
-  const { signOut } = useClerk();
-  const [deletingAgency, setDeletingAgency] = useState(false);
+  const router = useRouter()
+  const { signOut } = useClerk()
+  const [deletingAgency, setDeletingAgency] = useState(false)
   const form = useForm<z.infer<typeof FormSchema>>({
-    mode: "onChange",
+    mode: 'onChange',
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: data?.name,
