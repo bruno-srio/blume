@@ -92,11 +92,10 @@ const AgencyDetails = ({ data }: Props) => {
 
   useEffect(() => {
     if (data) {
-      // Merge with current values: `data` may be partial (e.g. only companyEmail
-      // on first load) and a plain reset(data) would wipe every other field.
-      // including the boolean `whiteLabel` default, making z.boolean() fail.
-      // form.reset({ ...form.getValues(), ...data });
-      form.reset(data);
+      // Merge over current values since `data` may be partial;
+      // a plain reset(data) would clear other fields and the `whiteLabel` boolean, breaking z.boolean().
+      form.reset({ ...form.getValues(), ...data });
+      // form.reset(data);
     }
   }, [data]);
 
@@ -127,11 +126,9 @@ const AgencyDetails = ({ data }: Props) => {
           },
         }
       }
-      newUserData = await initUser({ role: 'AGENCY_OWNER'})
-      //WIP: custId for stripe customer creation in
-      if (!data?.id) return
-      // const agencyId = data?.id ? data.id : v4();
-      const response = await upsertAgency({
+      newUserData = await initUser({ role: 'AGENCY_OWNER' })
+      //WIP: custId for stripe customer creation is still in progress
+      await upsertAgency({
         id: data?.id ? data.id : v4(),
         // customerId: data?.customerId || custId || "",
         address: values.address,
@@ -156,8 +153,6 @@ const AgencyDetails = ({ data }: Props) => {
       // if (response) {
       //   return router.refresh();
       // }
-      //cursor second attempt of redirecting to the agency page
-      // router.push(`/agency/${response?.id ?? agencyId}`);
       return router.refresh();
 
     } catch (error) {
@@ -194,197 +189,190 @@ const AgencyDetails = ({ data }: Props) => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
-              <FormField
-                disabled={isLoading}
-                control={form.control}
-                name='agencyLogo'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Agency Logo</FormLabel>
-                    <FormControl>
-                      <FileUpload
-                        apiEndpoint='agencyLogo'
-                        onChange={field.onChange}
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className='flex md:flex-row gap-4'>
+              <fieldset disabled={isLoading} className='space-y-4 border-0 p-0 m-0'>
                 <FormField
-                  disabled={isLoading}
                   control={form.control}
-                  name='name'
+                  name='agencyLogo'
                   render={({ field }) => (
-                    <FormItem className='flex-1'>
-                      <FormLabel>Agency Name</FormLabel>
+                    <FormItem>
+                      <FormLabel>Agency Logo</FormLabel>
                       <FormControl>
-                        <Input placeholder='Agency name' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  disabled={isLoading}
-                  control={form.control}
-                  name='companyEmail'
-                  render={({ field }) => (
-                    <FormItem className='flex-1'>
-                      <FormLabel>Agency Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder='your@email.com' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className='flex md:flex-row gap-4'>
-                <FormField
-                  disabled={isLoading}
-                  control={form.control}
-                  name='companyPhone'
-                  render={({ field }) => (
-                    <FormItem className='flex-1'>
-                      <FormLabel>Agency Phone</FormLabel>
-                      <FormControl>
-                        <Input placeholder='+1 (234) 567-8900' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                disabled={isLoading}
-                control={form.control}
-                name='whiteLabel'
-                render={({ field }) => {
-                  return (
-                    <FormItem className='flex flex-row items-center justify-between rounded-lg border gap-4 p-4'>
-                      <div>
-                        <FormLabel>Whitelabel Agency</FormLabel>
-                        <FormDescription>
-                          Turning on whitelabel mode will show your agency logo
-                          to all sub accounts by default. You can overwrite this
-                          functionality through sub account settings.
-                        </FormDescription>
-                      </div>
-
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
+                        <FileUpload
+                          apiEndpoint='agencyLogo'
+                          onChange={field.onChange}
+                          value={field.value}
                         />
                       </FormControl>
-                    </FormItem>
-                  );
-                }}
-              />
-              <div className='flex md:flex-row gap-4'>
-                <FormField
-                  disabled={isLoading}
-                  control={form.control}
-                  name='address'
-                  render={({ field }) => (
-                    <FormItem className='flex-1'>
-                      <FormLabel>Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder='123 Main St' {...field} />
-                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-              <div className='flex md:flex-row gap-4'>
-                <FormField
-                  disabled={isLoading}
-                  control={form.control}
-                  name='city'
-                  render={({ field }) => (
-                    <FormItem className='flex-1'>
-                      <FormLabel>City</FormLabel>
-                      <FormControl>
-                        <Input placeholder='City name' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  disabled={isLoading}
-                  control={form.control}
-                  name='zipCode'
-                  render={({ field }) => (
-                    <FormItem className='flex-1'>
-                      <FormLabel>Zip Code</FormLabel>
-                      <FormControl>
-                        <Input placeholder='12345' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  disabled={isLoading}
-                  control={form.control}
-                  name='state'
-                  render={({ field }) => (
-                    <FormItem className='flex-1'>
-                      <FormLabel>State</FormLabel>
-                      <FormControl>
-                        <Input placeholder='State name' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className='flex md:flex-row gap-4'>
-                <FormField
-                  disabled={isLoading}
-                  control={form.control}
-                  name='country'
-                  render={({ field }) => (
-                    <FormItem className='flex-1'>
-                      <FormLabel>Country</FormLabel>
-                      <FormControl>
-                        <Input placeholder='Country name' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              {data?.id && (
-                <div className='flex flex-col gap-2'>
-                  <FormLabel>Create a Goal</FormLabel>
-                  <FormDescription>
-                    Set a milestone for your agency growth. Track your progress and raise
-                    the standard as your business evolves.
-                  </FormDescription>
-                  <NumberInput
-                    defaultValue={data?.goal}
-                    onValueChange={async (val: number) => {
-                      if (!data?.id) return;
-                      await updateAgencyDetails(data.id, { goal: val });
-                      await saveActivityLogsNotification({
-                        agencyId: data.id,
-                        description: `Updated the agency goal to | ${val} Sub Account`,
-                        subaccountId: undefined,
-                      });
-                      router.refresh();
-                    }}
-                    min={1}
-                    className="bg-background !border !border-input rounded-md"
-                    placeholder="Sub Account Goal"
+                <div className='flex md:flex-row gap-4'>
+                  <FormField
+                    control={form.control}
+                    name='name'
+                    render={({ field }) => (
+                      <FormItem className='flex-1'>
+                        <FormLabel>Agency Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder='Agency name' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='companyEmail'
+                    render={({ field }) => (
+                      <FormItem className='flex-1'>
+                        <FormLabel>Agency Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder='your@email.com' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-              )}
+                <div className='flex md:flex-row gap-4'>
+                  <FormField
+                    control={form.control}
+                    name='companyPhone'
+                    render={({ field }) => (
+                      <FormItem className='flex-1'>
+                        <FormLabel>Agency Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder='+1 (234) 567-8900' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name='whiteLabel'
+                  render={({ field }) => {
+                    return (
+                      <FormItem className='flex flex-row items-center justify-between rounded-lg border gap-4 p-4'>
+                        <div>
+                          <FormLabel>Whitelabel Agency</FormLabel>
+                          <FormDescription>
+                            Turning on whitelabel mode will show your agency logo
+                            to all sub accounts by default. You can overwrite this
+                            functionality through sub account settings.
+                          </FormDescription>
+                        </div>
+
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    );
+                  }}
+                />
+                <div className='flex md:flex-row gap-4'>
+                  <FormField
+                    control={form.control}
+                    name='address'
+                    render={({ field }) => (
+                      <FormItem className='flex-1'>
+                        <FormLabel>Address</FormLabel>
+                        <FormControl>
+                          <Input placeholder='123 Main St' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className='flex md:flex-row gap-4'>
+                  <FormField
+                    control={form.control}
+                    name='city'
+                    render={({ field }) => (
+                      <FormItem className='flex-1'>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input placeholder='City name' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='zipCode'
+                    render={({ field }) => (
+                      <FormItem className='flex-1'>
+                        <FormLabel>Zip Code</FormLabel>
+                        <FormControl>
+                          <Input placeholder='12345' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='state'
+                    render={({ field }) => (
+                      <FormItem className='flex-1'>
+                        <FormLabel>State</FormLabel>
+                        <FormControl>  
+                          <Input placeholder='State name' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className='flex md:flex-row gap-4'>
+                  <FormField
+                    control={form.control}
+                    name='country'
+                    render={({ field }) => (
+                      <FormItem className='flex-1'>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input placeholder='Country name' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                {data?.id && (
+                  <div className='flex flex-col gap-2'>
+                    <FormLabel>Create a Goal</FormLabel>
+                    <FormDescription>
+                      Set a milestone for your agency growth. Track your progress and raise
+                      the standard as your business evolves.
+                    </FormDescription>
+                    <NumberInput
+                      defaultValue={data?.goal}
+                      onValueChange={async (val: number) => {
+                        if (!data?.id) return;
+                        await updateAgencyDetails(data.id, { goal: val });
+                        await saveActivityLogsNotification({
+                          agencyId: data.id,
+                          description: `Updated the agency goal to | ${val} Sub Account`,
+                          subaccountId: undefined,
+                        });
+                        router.refresh();
+                      }}
+                      min={1}
+                      className="bg-background !border !border-input rounded-md"
+                      placeholder="Sub Account Goal"
+                    />
+                  </div>
+                )}
+              </fieldset>
+
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? <Loading /> : "Save Agency Information"}
               </Button>
