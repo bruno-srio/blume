@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { AgencySidebarOption, SubAccount, SubAccountSidebarOption } from '@/generated/prisma'
 
 type Props = {
@@ -13,7 +13,11 @@ type Props = {
 }
 
 const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, details, user, id }: Props) => {
-  return <div>MenuOptions</div>
+  const openState = useMemo(
+    () => (defaultOpen ? { open: true } : {}),
+    [defaultOpen]
+  )
+  return <div>Menu Option</div>
 }
 
 export default MenuOptions
