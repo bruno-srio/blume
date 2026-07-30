@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { Agency, AgencySidebarOption, SubAccount, SubAccountSidebarOption } from '@/generated/prisma'
+import { AgencySidebarOption, SubAccount, SubAccountSidebarOption } from '@/generated/prisma'
 import { Menu, PlusCircleIcon } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '../ui/sheet'
@@ -10,7 +10,6 @@ import clsx from 'clsx'
 import { AspectRatio } from '../ui/aspect-ratio'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ChevronsUpDown, Compass } from 'lucide-react'
-import { useModal } from '@/providers/modal-provider'
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '../ui/command'
 import Link from 'next/link'
 
@@ -26,8 +25,6 @@ type Props = {
 }
   
 const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, details, user, id }: Props) => {
-  
-  const { setOpen } = useModal()
   // Prevents the sidebar from flashing on page load
   const [isMounted, setIsMounted] = useState(false)
 
@@ -215,14 +212,8 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                 {(user?.role === "AGENCY_OWNER" ||
                   user?.role === "AGENCY_ADMIN") && (
                   <SheetClose>
-                    <Button
-                      className="w-full flex gap-2"
-                      onClick={() =>
-                        setOpen(
-                          // WIP: Create Sub Account Modal
-                        )
-                      }
-                    >
+                    {/* TODO: open Create Sub Account modal via setOpen() */}
+                    <Button className="w-full flex gap-2">
                       <PlusCircleIcon size={15} />
                       Create Sub Account
                     </Button>
