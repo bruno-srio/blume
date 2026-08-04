@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { AgencySidebarOption, SubAccount, SubAccountSidebarOption } from '@/generated/prisma'
+import { Agency, AgencySidebarOption, SubAccount, SubAccountSidebarOption } from '@/generated/prisma'
 import { Menu, PlusCircleIcon } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '../ui/sheet'
@@ -12,6 +12,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ChevronsUpDown, Compass } from 'lucide-react'
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '../ui/command'
 import Link from 'next/link'
+import CustomModal from '../global/custom-modal'
+import { useModal } from '@/providers/modal-provider'
+import SubAccountDetails from '../forms/subaccount-details'
+
 
 
 type Props = {
@@ -25,6 +29,8 @@ type Props = {
 }
   
 const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, details, user, id }: Props) => {
+  
+  const { setOpen } = useModal()
   // Prevents the sidebar from flashing on page load
   const [isMounted, setIsMounted] = useState(false)
 
@@ -45,8 +51,7 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
   return (
     <Sheet 
       modal={false}
-      open={true}
-      // {...openState}
+      {...openState}
       >
       <SheetTrigger
         asChild
@@ -213,7 +218,25 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                   user?.role === "AGENCY_ADMIN") && (
                   <SheetClose>
                     {/* TODO: open Create Sub Account modal via setOpen() */}
-                    <Button className="w-full flex gap-2">
+                    <Button
+                      className="w-full flex gap-2"
+                      onClick={() => {
+                        setOpen(
+                        <CustomModal 
+                          title='Create Sub Account'
+                          subheading='You can switch between accounts by clicking on the account name in the sidebar'
+                          defaultOpen={true} 
+                          >
+                            <SubAccountDetails 
+                              agencyDetails={user?.Agency as Agency}
+                              userId={user?.id as string}
+                              userName={user?.name}
+                            />
+                          </CustomModal>
+                          
+                        )
+                      }}
+                      >
                       <PlusCircleIcon size={15} />
                       Create Sub Account
                     </Button>
