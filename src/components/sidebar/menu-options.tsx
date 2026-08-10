@@ -31,7 +31,7 @@ type Props = {
 const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, details, user, id }: Props) => {
   
   const { setOpen } = useModal()
-  // Prevents the sidebar from flashing on page load
+  // Avoid hydration mismatch / flash: Sheet markup only after client mount.
   const [isMounted, setIsMounted] = useState(false)
 
   // Force open for the persistent desktop rail; omit for the mobile sheet so it stays uncontrolled.
@@ -40,7 +40,6 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
     [defaultOpen]
   )
 
-  // Only when the component is mounted, set the state to true
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -62,17 +61,20 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
         </Button>
       </SheetTrigger>
       <SheetContent 
+        // Desktop rail stays open — hide the close (X); mobile sheet needs it.
         showX={!defaultOpen}
         side='left'
         className={clsx(
           'bg-background/80 backdrop-blur-xl fixed top-0 border-r-[1px] p-6',
           {
+            // Two instances render (desktop + mobile); only one is visible per breakpoint.
             'hidden md:inline-block z-0 w-[300px]': defaultOpen,
             'inline-block md:hidden z-[100] w-full': !defaultOpen,
           }
         )}
         >
         <div>
+         {/* Logo alone in AspectRatio so odd-sized uploads can't overflow into the switcher below. */}
          <AspectRatio ratio={16 / 5} className='overflow-hidden'>
           <Image 
             src={sidebarLogo} 
@@ -105,6 +107,7 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                 </div>
               </Button>
             </PopoverTrigger>
+            {/* z above mobile Sheet (z-[100]) so the account menu isn't trapped under the sheet overlay. */}
             <PopoverContent className="w-80 h-80 mt-4 z-[200]">
               <Command className="rounded-lg">
                 <CommandInput placeholder="Search Accounts..." />
@@ -115,6 +118,7 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                     user?.Agency && (
                       <CommandGroup heading="Agency">
                         <CommandItem className="!bg-transparent my-2 text-primary border-[1px] border-border p-2 rounded-md hover:!bg-muted cursor-pointer transition-all">
+                          {/* Mobile: SheetClose dismisses the drawer on navigate; desktop rail stays open. */}
                           {defaultOpen ? (
                             <Link
                               href={`/agency/${user?.Agency?.id}`}
@@ -219,26 +223,23 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                 {(user?.role === "AGENCY_OWNER" ||
                   user?.role === "AGENCY_ADMIN") && (
                   <SheetClose>
-                    {/* TODO: open Create Sub Account modal via setOpen() */}
                     <Button
                       className="w-full flex gap-2"
                       onClick={() => {
                         setOpen(
-                        <CustomModal 
-                          title='Create Sub Account'
-                          subheading='You can switch between accounts by clicking on the account name in the sidebar'
-                          defaultOpen={true} 
+                          <CustomModal
+                            title='Create Sub Account'
+                            subheading='You can switch between accounts by clicking on the account name in the sidebar'
                           >
-                            <SubAccountDetails 
+                            <SubAccountDetails
                               agencyDetails={user?.Agency as Agency}
                               userId={user?.id as string}
                               userName={user?.name}
                             />
                           </CustomModal>
-                          
                         )
                       }}
-                      >
+                    >
                       <PlusCircleIcon size={15} />
                       Create Sub Account
                     </Button>

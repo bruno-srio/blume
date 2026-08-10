@@ -47,6 +47,7 @@ const Sidebar = async ({ id, type }: Props) => {
 
   return (
     <>
+    {/* Desktop: forced open rail */}
     <MenuOptions
       defaultOpen={true}
       subAccounts={subaccounts}
@@ -56,8 +57,8 @@ const Sidebar = async ({ id, type }: Props) => {
       user={user}
       id={id}
     />
+    {/* Mobile: uncontrolled sheet so the burger can open/close it */}
     <MenuOptions
-      defaultOpen={true}
       subAccounts={subaccounts}
       sidebarOptions={sidebarOpt}
       sidebarLogo={sidebarLogo}
