@@ -18,9 +18,12 @@ type Props = {
 
 const CustomModal = ({ title, subheading, children, defaultOpen }: Props) => {
   const { isOpen, setClose } = useModal();
+  const open = isOpen || !!defaultOpen;
+
   return (
-    <Dialog open={isOpen || defaultOpen} onOpenChange={setClose}>
-      <DialogContent className="overflow-scroll md:max-h-[700px] md:h-fit bg-card">
+    <Dialog open={open} onOpenChange={(next) => { if (!next) setClose(); }}>
+      {/* max-h + overflow on all breakpoints so tall forms scroll on mobile; z above burger (z-100) */}
+      <DialogContent className="z-[110] max-h-[90vh] overflow-y-auto md:max-h-[700px] bg-card">
         <DialogHeader className="pt-8 text-left">
           <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
           <DialogDescription>{subheading}</DialogDescription>
