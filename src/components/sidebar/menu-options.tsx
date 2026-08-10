@@ -30,9 +30,11 @@ type Props = {
   
 const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, details, user, id }: Props) => {
   
-  const { setOpen } = useModal()
+  const { setOpen, isOpen: isModalOpen } = useModal()
   // Avoid hydration mismatch / flash: Sheet markup only after client mount.
   const [isMounted, setIsMounted] = useState(false)
+  // Controlled so Create Sub Account can dismiss the switcher before the modal opens (avoids z-[200] popover over the dialog).
+  const [popoverOpen, setPopoverOpen] = useState(false)
 
   // Force open for the persistent desktop rail; omit for the mobile sheet so it stays uncontrolled.
   const openState = useMemo(
@@ -52,14 +54,17 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
       modal={false}
       {...openState}
       >
-      <SheetTrigger
-        asChild
-        className="absolute left-4 top-4 z-[100] md:!hidden flex"
-      >
-        <Button variant='outline' size='icon'>
-          <Menu className='h-4 w-4' />
-        </Button>
-      </SheetTrigger>
+      {/* Hide burger while a global modal is open — it sits at z-100 above Dialog (z-50). */}
+      {!isModalOpen && (
+        <SheetTrigger
+          asChild
+          className="absolute left-4 top-4 z-[100] md:!hidden flex"
+        >
+          <Button variant='outline' size='icon'>
+            <Menu className='h-4 w-4' />
+          </Button>
+        </SheetTrigger>
+      )}
       <SheetContent 
         // Desktop rail stays open — hide the close (X); mobile sheet needs it.
         showX={!defaultOpen}
@@ -84,7 +89,7 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
             sizes='300px'
           />
          </AspectRatio>
-          <Popover>
+          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverTrigger asChild>
               <Button 
                 className='w-full my-4 flex items-center justify-between py-8' 
@@ -226,10 +231,11 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                     <Button
                       className="w-full flex gap-2"
                       onClick={() => {
+                        setPopoverOpen(false)
                         setOpen(
                           <CustomModal
                             title='Create Sub Account'
-                            subheading='You can switch between accounts by clicking on the account name in the sidebar'
+                            subheading='Enter the details below to create a new sub account'
                           >
                             <SubAccountDetails
                               agencyDetails={user?.Agency as Agency}
