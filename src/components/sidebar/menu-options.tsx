@@ -73,13 +73,15 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
         )}
         >
         <div>
-         <AspectRatio ratio={16 / 5}>
+         <AspectRatio ratio={16 / 5} className='overflow-hidden'>
           <Image 
             src={sidebarLogo} 
             alt='sidebar logo' 
             fill 
             className='object-contain' 
+            sizes='300px'
           />
+         </AspectRatio>
           <Popover>
             <PopoverTrigger asChild>
               <Button 
@@ -245,7 +247,6 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
               </Command>
             </PopoverContent>
           </Popover>
-         </AspectRatio>
         </div>
 
       </SheetContent>
