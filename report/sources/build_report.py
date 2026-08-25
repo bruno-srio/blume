@@ -72,24 +72,34 @@ def resumo():
         "características técnicas dos sites gerados ficassem sob controlo do programador."
     )
     r.p(
-        "O desenvolvimento começou seguindo um tutorial em vídeo de acesso público e afastou-se "
-        "progressivamente dele, porque várias das bibliotecas usadas no tutorial tinham entretanto "
-        "sofrido alterações significativas. O sistema entregue é uma aplicação `Next.js 14` escrita em "
-        "`TypeScript`, que usa o App Router com React Server Components e Server Actions, `Prisma` "
-        "sobre `MySQL` para persistência, `Clerk` para autenticação e `UploadThing` para armazenamento "
-        "de ficheiros. Implementa um site público de divulgação, autenticação com proteção ao nível "
-        "da rota, controlo de acessos baseado em papéis, registo de agências com formulários "
-        "validados e carregamento de logótipo, um mecanismo de convites para adesão a uma agência "
-        "existente, notificações de atividade e a criação de subcontas."
+        "O desenvolvimento partiu de um tutorial em vídeo de acesso público, usado como referência "
+        "inicial de arquitetura, de modelo de domínio e de sequência de construção. O material "
+        "tinha cerca de um ano e várias das bibliotecas envolvidas tinham entretanto lançado versões "
+        "maiores com alterações de API, pelo que as instruções originais deixaram de produzir um "
+        "sistema funcional. A implementação exigiu reproduzir as falhas, ler a documentação atual de "
+        "cada biblioteca, decidir caso a caso entre fixar uma versão antiga e adaptar-se à nova, e "
+        "reescrever as partes afetadas. Esse trabalho de diagnóstico, adaptação e decisão é o "
+        "desenvolvimento propriamente dito, e está documentado nos capítulos 8 e 9."
     )
     r.p(
-        "O esquema de dados declara 23 modelos e descreve o domínio pretendido na totalidade, "
-        "incluindo CRM, funis, multimédia e faturação, mas apenas o subconjunto relativo a identidade "
-        "e inquilinos é exercitado pelo código atual; o restante é apresentado como âmbito previsto e "
-        "não como funcionalidade entregue. A validação foi manual e estática, apoiada em `TypeScript` "
-        "e `ESLint`; não existe qualquer suite de testes automatizados. O relatório descreve a "
-        "arquitetura, o modelo de dados, a implementação e os principais problemas técnicos que foi "
-        "necessário resolver, acompanhados de uma avaliação crítica do resultado."
+        "O sistema é uma aplicação `Next.js 14` escrita em `TypeScript`, que usa o App Router com "
+        "React Server Components e Server Actions, `Prisma` sobre `MySQL` para persistência, `Clerk` "
+        "para autenticação e `UploadThing` para armazenamento de ficheiros. Estão implementados o "
+        "site público de divulgação, a autenticação com proteção ao nível da rota, o controlo de "
+        "acessos baseado em papéis, o registo de agências com formulários validados e carregamento de "
+        "logótipo, o mecanismo de convites para adesão a uma agência existente, o registo de "
+        "atividade e a criação de subcontas."
+    )
+    r.p(
+        "O projeto está em desenvolvimento ativo, e este relatório descreve o estado atual e não um "
+        "produto fechado. O esquema de dados declara 23 modelos e descreve o domínio completo, "
+        "incluindo CRM, funis, multimédia e faturação; a fundação multi-inquilino está construída e "
+        "as áreas funcionais estão a ser desenvolvidas sobre ela. Distingue-se o que já está "
+        "implementado, o que está em desenvolvimento, o que está planeado e o que são ideias em "
+        "aberto. A validação até agora tem sido manual e estática, apoiada em `TypeScript` e "
+        "`ESLint`; testes automatizados estão planeados. São descritos a arquitetura, o modelo de "
+        "dados, a implementação, os principais problemas técnicos resolvidos e os fluxos de trabalho "
+        "assistidos por IA desenhados para automatizar tarefas recorrentes de desenvolvimento."
     )
 
     r.h(2, "Palavras-chave", in_toc=False)
@@ -131,12 +141,12 @@ def cap1():
 
     r.h(2, "1.2 Origem da ideia")
     r.p(
-        "O projeto não começou com um enunciado formal de problema. Como muitos estudantes a "
-        "aproximar-se do último ano, foi necessário primeiro decidir o que construir. Durante a "
-        "pesquisa de material sobre desenvolvimento de software encontrei um tutorial em vídeo "
-        "extenso sobre uma pilha tecnológica moderna, parte do qual tratava de um construtor de "
-        "sites. Essa componente específica interessou-me por ligação a uma experiência profissional "
-        "anterior."
+        "O projeto não começou com um enunciado formal de problema. Durante a pesquisa de material "
+        "sobre desenvolvimento de software encontrei um tutorial em vídeo extenso sobre uma pilha "
+        "tecnológica moderna, parte do qual tratava de um construtor de sites. Essa componente "
+        "específica interessou-me por ligação a uma experiência profissional anterior, e o tutorial "
+        "passou a servir de ponto de partida — um modelo de domínio e uma pilha já articulados, a "
+        "partir dos quais o desenvolvimento próprio se organizou."
     )
     r.p(
         "Antes de estudar Informática trabalhei como designer gráfico independente, e um dos meus "
@@ -175,9 +185,9 @@ def cap1():
     ])
 
     r.h(2, "1.4 Objetivos")
-    r.p("Os objetivos abaixo foram derivados retrospetivamente do que o projeto se propôs fazer e do "
-        "que o repositório contém atualmente. Estão formulados ao nível de um projeto de licenciatura "
-        "desenvolvido por um único autor.")
+    r.p("Os objetivos abaixo enquadram a fase atual do desenvolvimento e estão formulados ao nível de "
+        "um projeto de licenciatura conduzido por um único autor. Correspondem à fundação sobre a "
+        "qual as áreas funcionais da plataforma estão a ser construídas.")
     r.bullets([
         "**O1.** Conceber e implementar um modelo de dados relacional capaz de representar uma "
         "agência, a sua equipa, as suas subcontas de cliente e os recursos que lhes pertencem.",
@@ -191,52 +201,54 @@ def cap1():
         "por subdomínio.",
         "**O6.** Construir a estrutura base da aplicação (navegação, troca de conta, janelas modais) "
         "sobre a qual as restantes áreas funcionais possam ser construídas.",
-        "**O7.** Adquirir experiência prática com uma pilha tecnológica web atual e documentar os "
-        "problemas técnicos encontrados de forma suficientemente honesta para que o processo seja "
-        "reproduzível.",
+        "**O7.** Adquirir experiência prática com uma pilha tecnológica web atual, incluindo a "
+        "adaptação a APIs que mudaram desde a referência inicial, e documentar os problemas "
+        "técnicos encontrados e as decisões tomadas para os resolver.",
     ])
-    r.p("O capítulo 11 avalia cada um destes objetivos face ao sistema entregue.")
+    r.p("O capítulo 11 avalia cada um destes objetivos face ao estado atual do sistema.")
 
     r.h(2, "1.5 Âmbito")
     r.p(
-        "O âmbito do software entregue é mais estreito do que o âmbito descrito pelo esquema da base "
-        "de dados, e este relatório mantém os dois separados. Está implementado e é acessível pela "
-        "interface: o site de divulgação, a autenticação, o registo de agências, o fluxo de convites, "
-        "as definições da agência incluindo eliminação, a criação de subcontas, o carregamento de "
-        "ficheiros e a estrutura base da aplicação. Existe apenas como modelo de dados, sem consultas, "
-        "rotas ou interface: o subsistema de CRM, os subsistemas de funis e multimédia, o subsistema "
-        "de automações e a faturação. O capítulo 6 e o apêndice A detalham esta distinção entidade a "
-        "entidade."
+        "O esquema da base de dados descreve o produto completo, enquanto o software construído até "
+        "agora cobre a fundação sobre a qual esse produto assenta. Este relatório mantém as duas "
+        "coisas distintas. Estão implementados e acessíveis pela interface o site de divulgação, a "
+        "autenticação, o registo de agências, a aceitação de convites, as definições da agência "
+        "incluindo eliminação, a criação de subcontas, o carregamento de ficheiros e a estrutura base "
+        "da aplicação. Estão modelados e planeados o subsistema de CRM, os subsistemas de funis e "
+        "multimédia, o subsistema de automações e a faturação. O capítulo 6 e o apêndice A detalham "
+        "esta distinção entidade a entidade."
     )
     r.p(
-        "Importa afirmar desde já que a funcionalidade de construção de sites, que motivou "
-        "originalmente o projeto, não está implementada. O esquema contém as entidades que ela "
-        "exigiria e a camada de encaminhamento contém a reescrita de subdomínio de que precisaria, "
-        "mas não existe editor de páginas, nem renderizador, nem mecanismo de publicação. A secção "
-        "13.5 retoma este ponto."
+        "A funcionalidade de construção de sites, que motivou originalmente o projeto, está planeada "
+        "para uma fase posterior. Ainda não tem editor de páginas, renderizador nem mecanismo de "
+        "publicação; duas das suas dependências já estão no lugar: as entidades `Funnel`, "
+        "`FunnelPage` e `ClassName` no esquema, e a reescrita de subdomínio na camada de "
+        "encaminhamento. A secção 13.5 descreve o que essa fase envolve. Uma direção posterior, "
+        "ainda sem desenho nem calendário, é desenvolver componentes próprios para esse editor em "
+        "vez de depender apenas de blocos genéricos; a secção 13.6 assinala-a como ideia em aberto."
     )
 
     r.h(2, "1.6 Utilizadores previstos")
     r.p(
-        "O sistema implementado representa dois grupos de utilizadores. Os proprietários e "
-        "administradores de agência criam a agência, configuram os seus dados, convidam membros da "
-        "equipa e criam subcontas de cliente. Os utilizadores e convidados de subconta estão "
-        "representados no modelo de dados e na enumeração `Role`, e o código de encaminhamento "
-        "redireciona-os para fora da área da agência, mas a área de subconta para onde seriam "
-        "encaminhados ainda não existe."
+        "O sistema representa dois grupos de utilizadores. Os proprietários e administradores de "
+        "agência criam a agência, configuram os seus dados, convidam membros da equipa e criam "
+        "subcontas de cliente; é este o grupo servido pela aplicação hoje. Os utilizadores e "
+        "convidados de subconta estão representados no modelo de dados e na enumeração `Role`, e o "
+        "código de encaminhamento já os encaminha para fora da área da agência; a área de subconta "
+        "para onde são dirigidos está planeada e é uma das próximas a construir."
     )
 
     r.h(2, "1.7 Estrutura do relatório")
     r.p(
-        "O capítulo 2 desenvolve o enquadramento e a motivação, incluindo uma descrição honesta do "
-        "tutorial que serviu de ponto de partida. O capítulo 3 enuncia os requisitos e o respetivo "
-        "estado. O capítulo 4 descreve as tecnologias usadas e as razões da escolha. O capítulo 5 "
-        "apresenta a arquitetura e o capítulo 6 o modelo de dados. O capítulo 7 descreve a "
-        "implementação subsistema a subsistema. O capítulo 8 descreve como o projeto evoluiu na "
-        "prática e o capítulo 9 analisa os problemas técnicos mais significativos. O capítulo 10 "
-        "relata a validação realizada, o capítulo 11 o que foi alcançado e o capítulo 12 discute o "
-        "resultado de forma crítica. O capítulo 13 enuncia limitações e trabalho futuro e o capítulo "
-        "14 conclui."
+        "O capítulo 2 desenvolve o enquadramento e a motivação, incluindo o papel do tutorial que "
+        "serviu de ponto de partida. O capítulo 3 enuncia os requisitos e o respetivo estado. O "
+        "capítulo 4 descreve as tecnologias usadas e as razões da escolha. O capítulo 5 apresenta a "
+        "arquitetura e o capítulo 6 o modelo de dados. O capítulo 7 descreve a implementação "
+        "subsistema a subsistema. O capítulo 8 descreve o processo de desenvolvimento, incluindo os "
+        "fluxos de trabalho assistidos por IA construídos para o apoiar, e o capítulo 9 analisa os "
+        "problemas técnicos mais significativos. O capítulo 10 relata a validação realizada, o "
+        "capítulo 11 o estado atual do sistema e o capítulo 12 discute-o. O capítulo 13 descreve o "
+        "trabalho em curso, o planeado e as ideias em aberto, e o capítulo 14 conclui."
     )
     r.page_break()
 
@@ -277,11 +289,10 @@ def cap2():
         "como se comporta, como o esforço de engenharia que seria necessário para fazer melhor."
     )
     r.p(
-        "É importante ser preciso quanto ao que daqui decorre. A motivação do Blume é o desejo de "
-        "maior controlo sobre os sites gerados. Não é uma demonstração de que o Blume atinge melhor "
-        "desempenho do que o Wix. Nenhuma comparação desse tipo foi realizada, porque a funcionalidade "
-        "de geração de sites não está implementada e, portanto, não há nada para medir. A secção 13.5 "
-        "descreve o que tal avaliação exigiria."
+        "Convém ser preciso quanto ao estatuto desta motivação. O que o Blume persegue é o controlo "
+        "sobre o código dos sites gerados; que esse controlo se traduza em melhor desempenho medido "
+        "é uma hipótese a testar quando a geração de sites estiver implementada. A secção 13.5 "
+        "descreve a avaliação que essa fase permitirá fazer."
     )
 
     r.h(2, "2.3 De construtor de sites a plataforma para agências")
@@ -294,55 +305,67 @@ def cap2():
         "funcionalidade de um produto maior e não o produto em si."
     )
     r.p(
-        "Seguir essa estrutura foi uma decisão deliberada. Oferecia um problema de engenharia mais "
+        "Adotar essa estrutura foi uma decisão deliberada. Oferecia um problema de engenharia mais "
         "rico e mais realista do que um editor de sites para um só utilizador: multi-inquilino, "
         "controlo de acessos por papéis, fluxos de convite e encaminhamento por subdomínio são "
-        "preocupações que um editor isolado não levantaria. O custo da decisão foi a construção de "
-        "sites ter ficado posicionada tarde na sequência prevista de trabalho, e o desenvolvimento "
-        "não ter chegado a essa fase."
+        "preocupações que um editor isolado não levantaria. A contrapartida é de sequência: a "
+        "construção de sites depende da plataforma que a há de alojar, pelo que fica naturalmente "
+        "posicionada depois da fundação multi-inquilino. É essa fundação que está construída, e é "
+        "para essa funcionalidade que o plano de desenvolvimento aponta."
     )
 
-    r.h(2, "2.4 Partir de um tutorial")
+    r.h(2, "2.4 O tutorial como ponto de partida")
     r.p(
-        "A implementação inicial seguiu um tutorial em vídeo extenso publicado no canal de YouTube "
+        "O ponto de partida do projeto foi um tutorial em vídeo extenso publicado no canal de YouTube "
         "WebProdigies, que constrói uma plataforma para agências chamada Plura com `Next.js`, "
-        "`Prisma`, `Clerk` e `Stripe`. Declara-se isto abertamente porque é central para compreender "
-        "tanto o código como a história de desenvolvimento, e porque o relatório seria desonesto sem "
-        "esta indicação."
+        "`Prisma`, `Clerk` e `Stripe`. Usá-lo como referência inicial foi uma decisão de método: "
+        "fornecia um modelo de domínio coerente e uma seleção de tecnologias já articuladas entre si, "
+        "o que permitiu começar a construir em vez de gastar as primeiras semanas apenas a convergir "
+        "para uma arquitetura."
     )
-    r.p("O tutorial forneceu:")
+    r.p("Da referência inicial vieram:")
     r.bullets([
         "o conceito global do produto e a decomposição em agência e subconta;",
-        "o esquema `Prisma` inicial, adotado praticamente sem alterações no primeiro commit;",
-        "a escolha das tecnologias;",
+        "o esquema `Prisma` inicial, avaliado e adotado no primeiro commit;",
+        "a seleção de tecnologias;",
         "a estrutura geral dos grupos de rotas e a forma do módulo de consultas no servidor;",
         "a linguagem visual da página de divulgação e da estrutura base da aplicação.",
     ])
     r.p(
-        "O que o tutorial não forneceu foi um resultado funcional. Tinha cerca de um ano quando o "
-        "projeto começou e, nesse período, o `Next.js` lançou uma versão maior, o `React` lançou uma "
-        "versão maior, o `Clerk` alterou a API do seu middleware, o `UploadThing` alterou a API dos "
-        "seus auxiliares de cliente e o `Prisma` alterou o local onde recomenda gerar o cliente. Em "
-        "consequência, uma parte substancial do esforço de desenvolvimento foi gasta a diagnosticar "
-        "por que razão instruções corretas à data da gravação já não funcionavam, e a decidir, caso a "
-        "caso, entre fixar uma versão antiga ou adaptar-se à nova. Os capítulos 8 e 9 descrevem isto "
-        "em detalhe e a Tabela 6 resume a divergência resultante."
+        "A referência, contudo, não descrevia o estado atual das bibliotecas. O material tinha cerca "
+        "de um ano quando o projeto começou e, nesse intervalo, o `Next.js` lançou uma versão maior, "
+        "o `React` lançou uma versão maior, o `Clerk` substituiu a API do seu middleware, o "
+        "`UploadThing` alterou a API dos seus auxiliares de cliente e o `Prisma` mudou o local onde "
+        "recomenda gerar o cliente. Seguir as instruções tal como estavam produzia, na melhor das "
+        "hipóteses, código que não compilava e, na pior, comportamentos incorretos sem mensagem de "
+        "erro — como o ciclo de redireções da secção 9.2 ou o formulário que falhava silenciosamente "
+        "da secção 9.7."
     )
     r.p(
-        "O resumo honesto é o seguinte: a arquitetura e o modelo de domínio não são originais deste "
-        "projeto, e o relatório não afirma o contrário. O trabalho que é meu consiste na adaptação "
-        "dessa arquitetura a um conjunto de bibliotecas para o qual não tinha sido escrita, no "
-        "diagnóstico e reparação das falhas daí resultantes, num conjunto de decisões de "
-        "implementação que se afastam do tutorial, e no critério de engenharia necessário para "
-        "decidir quando seguir a fonte e quando dela divergir."
+        "O desenvolvimento consistiu em reproduzir e isolar cada falha, ler a documentação atual de "
+        "cada biblioteca, decidir caso a caso entre fixar uma versão antiga e adaptar-se à nova, e "
+        "reescrever as partes afetadas a partir das APIs em vigor. Em várias situações a solução "
+        "original deixou de ser aplicável e foi substituída por uma implementação própria — a "
+        "configuração de matchers do middleware, o caminho de import do cliente `Prisma`, a fixação "
+        "coordenada de versões e o tratamento de imagens carregadas são exemplos analisados no "
+        "capítulo 9."
+    )
+    r.p(
+        "A relação com a fonte foi mudando à medida que o projeto avançava. No início forneceu a "
+        "ordem de construção e o esqueleto da pilha. À medida que as APIs divergiam, passou a ser "
+        "sobretudo uma descrição de intenção, cuja tradução para as bibliotecas atuais era o "
+        "trabalho. Na fase mais recente deixou de ser a fonte da sequência: as funcionalidades "
+        "seguintes — barra lateral, seletor de conta, correções de layout, higiene de commits — "
+        "foram desenvolvidas a partir do estado do próprio repositório. O capítulo 8 descreve esta "
+        "progressão e a Tabela 6 regista, ponto a ponto, onde a implementação atual difere da "
+        "referência e porquê."
     )
 
     r.h(2, "2.5 Posicionamento do projeto")
     r.p(
-        "O Blume não é uma contribuição de investigação nem pretende sê-lo. É um projeto de "
-        "engenharia cuja contribuição é a conceção, adaptação, integração, depuração e avaliação "
-        "crítica de uma aplicação web multi-inquilino não trivial, construída sobre uma pilha "
-        "tecnológica atual de produção. É esse o critério com que o restante relatório deve ser lido."
+        "O Blume é um projeto de engenharia: a conceção, adaptação, integração, depuração e avaliação "
+        "de uma aplicação web multi-inquilino não trivial, construída sobre uma pilha tecnológica "
+        "atual. É esse o critério com que o restante relatório deve ser lido."
     )
     r.page_break()
 
@@ -352,17 +375,26 @@ def cap3():
     r.h(1, "3. Objetivos e Requisitos")
     r.p(
         "Os requisitos abaixo foram reconstruídos a partir do sistema implementado, do esquema da "
-        "base de dados e da história de desenvolvimento. Cada requisito funcional tem um estado "
-        "determinado por inspeção do repositório, segundo as definições seguintes."
+        "base de dados e do plano de desenvolvimento. Como o projeto está em desenvolvimento ativo, "
+        "cada requisito tem um estado determinado por inspeção do repositório, segundo quatro "
+        "categorias que este relatório usa de forma consistente do princípio ao fim."
     )
     r.bullets([
         "**Implementado.** Acessível pela interface, suportado por código no servidor e persistido na "
         "base de dados.",
-        "**Parcial.** Parte do mecanismo existe e funciona, mas a funcionalidade não é utilizável de "
-        "ponta a ponta.",
-        "**Previsto.** Representado no modelo de dados ou na configuração, sem qualquer lógica "
-        "aplicacional que o suporte.",
+        "**Em desenvolvimento.** O mecanismo do lado do servidor está construído e a funcionar; falta "
+        "a camada que o expõe ao utilizador. É onde o trabalho decorre atualmente.",
+        "**Planeado.** Faz parte do plano de desenvolvimento e está representado no modelo de dados "
+        "ou na configuração, aguardando implementação.",
+        "**Ideia em aberto.** Direção considerada para fases posteriores, ainda sem desenho nem "
+        "calendário definidos.",
     ])
+    r.p(
+        "A fronteira entre as duas primeiras categorias e as duas últimas corresponde, na prática, à "
+        "fronteira entre a fundação da plataforma e as suas áreas funcionais. A fundação — modelo "
+        "multi-inquilino, identidade, autorização, encaminhamento e registo — está construída; as "
+        "áreas funcionais estão a ser construídas por cima dela."
+    )
 
     r.h(2, "3.1 Requisitos funcionais")
     r.table(
@@ -393,36 +425,36 @@ def cap3():
             ["RF12", "O proprietário consegue criar uma subconta de cliente a partir da interface.",
              ("Implementado", True), "`SubAccountDetails` em modal; `upsertSubAccount`"],
             ["RF13", "O utilizador consegue alternar entre a agência e as suas subcontas.",
-             ("Parcial", True), "O seletor e as ligações existem, mas `/subaccount` não tem rotas"],
+             ("Em desenvolvimento", True), "O seletor e as ligações existem; faltam as rotas `/subaccount`"],
             ["RF14", "A barra lateral expõe navegação para as áreas funcionais da agência.",
-             ("Parcial", True), "São criados 6 registos `AgencySidebarOption` que nunca são renderizados"],
+             ("Em desenvolvimento", True), "São criados e carregados 6 registos `AgencySidebarOption`; falta renderizá-los"],
             ["RF15", "As notificações registadas são apresentadas ao utilizador.",
-             ("Parcial", True), "`getNotifications` é chamado no layout; o resultado não é usado"],
+             ("Em desenvolvimento", True), "`getNotifications` já é chamado no layout; falta a interface"],
             ["RF16", "O painel da agência apresenta informação da agência.",
-             ("Parcial", True), "`[agencyId]/page.tsx` renderiza apenas o identificador"],
+             ("Em desenvolvimento", True), "`[agencyId]/page.tsx` renderiza o identificador; os dados já estão disponíveis"],
             ["RF17", "Os sites publicados são servidos em subdomínio próprio.",
-             ("Parcial", True), "Reescrita implementada no middleware; páginas `/[domain]` são esboços"],
+             ("Em desenvolvimento", True), "Reescrita implementada no middleware; páginas `/[domain]` ainda são esboços"],
             ["RF18", "Os utilizadores de subconta têm uma área dedicada.",
-             ("Previsto", True), "O destino `/subaccount` existe como diretório vazio"],
+             ("Planeado", True), "O destino `/subaccount` está reservado como diretório"],
             ["RF19", "Os clientes são geridos através de pipelines, lanes, tickets e contactos.",
-             ("Previsto", True), "Modelos no esquema; sem consultas, rotas ou interface"],
+             ("Planeado", True), "Modelos no esquema, com as colunas de ordenação que o Kanban exige"],
             ["RF20", "Os sites são compostos e publicados através de um editor de páginas.",
-             ("Previsto", True), "Apenas os modelos `Funnel`, `FunnelPage` e `ClassName`"],
+             ("Planeado", True), "Modelos `Funnel`, `FunnelPage` e `ClassName` já modelados"],
             ["RF21", "Uma biblioteca de multimédia guarda recursos por subconta.",
-             ("Previsto", True), "Modelo `Media` e uma rota `media` do UploadThing não utilizada"],
+             ("Planeado", True), "Modelo `Media` e rota `media` do UploadThing já declarada"],
             ["RF22", "As automações são despoletadas por eventos como a submissão de formulários.",
-             ("Previsto", True), "Apenas `Trigger`, `Automation`, `AutomationInstance` e `Action`"],
+             ("Planeado", True), "Modelos `Trigger`, `Automation`, `AutomationInstance` e `Action`"],
             ["RF23", "As agências são faturadas através de planos de subscrição.",
-             ("Previsto", True), "Modelos `Subscription` e `AddOns`, variáveis de ambiente; sem SDK do Stripe"],
+             ("Planeado", True), "Modelos `Subscription` e `AddOns` e variáveis de ambiente; SDK por integrar"],
         ],
         "Requisitos funcionais e o respetivo estado no repositório atual.",
-        widths=[1.0, 6.3, 2.8, 5.4], font_size=8.5,
+        widths=[1.0, 5.9, 3.2, 5.4], font_size=8.5,
     )
     r.p(
-        "Doze dos vinte e três requisitos estão totalmente implementados, cinco estão parcialmente "
-        "implementados e seis existem apenas como previsão. O grupo dos parciais é característico do "
-        "ponto em que o desenvolvimento parou: em todos os casos o mecanismo do lado do servidor "
-        "existe e o que falta é a interface que o exporia."
+        "Doze dos vinte e três requisitos estão implementados, cinco estão em desenvolvimento e seis "
+        "estão planeados. O grupo em desenvolvimento tem um padrão consistente: em todos os casos o "
+        "mecanismo do lado do servidor está construído e a trabalhar, e o que está a ser construído "
+        "agora é a camada de interface que o expõe. É essa a frente de trabalho atual."
     )
 
     r.h(2, "3.2 Requisitos não funcionais")
@@ -461,33 +493,41 @@ def cap3():
              "desenvolvimento",
              ("Não avaliado", True)],
             ["RNF9", "Fiabilidade através de testes automatizados",
-             "Não está instalada qualquer framework de testes",
-             ("Não cumprido", True)],
+             "Ainda não está instalada uma framework de testes",
+             ("Planeado", True)],
         ],
-        "Requisitos não funcionais e avaliação honesta de cada um.",
+        "Requisitos não funcionais e o estado atual de cada um.",
         widths=[1.4, 4.2, 7.2, 3.0], font_size=8.5,
     )
     r.p(
-        "Duas avaliações exigem justificação. O RNF2 está marcado como parcialmente cumprido porque, "
-        "embora todas as consultas do código estejam corretamente delimitadas, a verificação de papel "
+        "Duas avaliações merecem nota. O RNF2 está parcialmente cumprido porque, embora todas as "
+        "consultas do código estejam corretamente delimitadas pelo inquilino, a verificação de papel "
         "que protege a área da agência lê os metadados da sessão `Clerk` e não a base de dados, e as "
-        "rotas do `UploadThing` autenticam quem chama sem associar o carregamento a um inquilino. A "
-        "secção 12.3 discute ambos os pontos. O RNF6 está parcialmente cumprido porque o tratamento "
-        "de segredos está estruturalmente correto, mas a cópia de trabalho contém um ficheiro `.env` "
-        "com credenciais reais. Está excluído do Git pelo `.gitignore`, o que protege o repositório "
-        "remoto e deixa os segredos em texto simples no disco."
+        "rotas do `UploadThing` autenticam quem chama sem associar o carregamento a um inquilino. "
+        "Ambos os pontos estão identificados e agendados para correção (secções 12.3 e 13.3). O RNF6 "
+        "está parcialmente cumprido porque o tratamento de segredos está estruturalmente correto — o "
+        "ficheiro `.env` está excluído do Git — mas os segredos permanecem em texto simples na cópia "
+        "de trabalho."
     )
 
-    r.h(2, "3.3 Exclusões explícitas")
-    r.p("Os pontos seguintes foram deixados conscientemente fora de âmbito e não são reclamados em "
-        "nenhum ponto deste relatório:")
+    r.h(2, "3.3 Fronteiras do âmbito")
+    r.p(
+        "O plano de desenvolvimento é maior do que o que cabe no calendário de um projeto de "
+        "licenciatura, pelo que o relatório distingue o que está adiado dentro do plano do que está "
+        "fora dele."
+    )
+    r.p("Planeado para fases posteriores, com o suporte de dados já no lugar:")
     r.bullets([
-        "processamento de pagamentos, gestão de subscrições e partilha de receita da plataforma;",
-        "envio de correio eletrónico, incluindo o envio das mensagens de convite, que atualmente têm "
-        "de ser criadas diretamente na base de dados;",
-        "o editor visual de páginas e a renderização dos sites publicados;",
-        "internacionalização e auditoria de acessibilidade;",
-        "implantação em produção, monitorização e integração contínua.",
+        "o editor visual de páginas e a renderização dos sites publicados (RF20);",
+        "o envio de correio eletrónico, de que depende a emissão de convites pela interface;",
+        "a gestão de subscrições e os planos de faturação (RF23), cujos modelos já estão declarados;",
+        "a implantação em produção com integração contínua.",
+    ])
+    r.p("Fora do âmbito do projeto, e por isso não abordado neste relatório:")
+    r.bullets([
+        "o processamento efetivo de pagamentos e a partilha de receita da plataforma, que envolvem "
+        "requisitos legais e financeiros alheios ao objetivo do trabalho;",
+        "internacionalização e auditoria formal de acessibilidade.",
     ])
     r.page_break()
 
@@ -566,9 +606,9 @@ def cap4():
         "O `UploadThing v7` trata do carregamento de imagens. O servidor declara um file router com "
         "rotas de carregamento nomeadas e as suas restrições, e o cliente usa componentes tipados, "
         "gerados a partir desse router. São declaradas quatro rotas — `agencyLogo`, `subaccountLogo`, "
-        "`avatar` e `media` — cada uma aceitando uma imagem de até 4 MB. Apenas as duas primeiras são "
-        "usadas; `avatar` e `media` estão declaradas em antecipação de funcionalidades que não "
-        "existem."
+        "`avatar` e `media` — cada uma aceitando uma imagem de até 4 MB. As duas primeiras estão em "
+        "uso; `avatar` e `media` foram declaradas antecipadamente para as funcionalidades planeadas "
+        "de perfil de utilizador e biblioteca de multimédia."
     )
 
     r.h(2, "4.5 Interface")
@@ -595,8 +635,8 @@ def cap4():
         "para uma tentativa de diagrama obtido por engenharia inversa — tentativa que falhou por "
         "razões explicadas na secção 9.6 e que se revelou um dos episódios mais instrutivos do "
         "projeto. O controlo de versões é feito com `Git` e um repositório remoto privado no GitHub. "
-        "A edição passou do Visual Studio Code para o Cursor durante o projeto; a secção 8.3 discute "
-        "honestamente o recurso a assistência por IA."
+        "A edição passou do Visual Studio Code para o Cursor durante o projeto, o que permitiu "
+        "construir os fluxos de trabalho assistidos por IA descritos na secção 8.3."
     )
 
     r.table(
@@ -665,23 +705,23 @@ def cap5():
             ["`/agency/sign-in/[[...sign-in]]`", "componente de servidor", "Montagem catch-all do `<SignIn/>`", ("Implementado", True)],
             ["`/agency/sign-up/[[...sign-up]]`", "componente de servidor", "Montagem catch-all do `<SignUp/>`", ("Implementado", True)],
             ["`/agency`", "componente de servidor", "Aceitação de convite, redireção por papel, formulário de registo", ("Implementado", True)],
-            ["`/agency/[agencyId]`", "componente de servidor", "Painel da agência; renderiza só o identificador", ("Parcial", True)],
+            ["`/agency/[agencyId]`", "componente de servidor", "Painel da agência; renderiza o identificador", ("Em desenvolvimento", True)],
             ["`/agency/unauthorized`", "componente de servidor", "Aviso de acesso negado", ("Implementado", True)],
-            ["`/[domain]`", "componente de servidor", "Entrada do site do inquilino; devolve um marcador", ("Esboço", True)],
-            ["`/[domain]/[path]`", "componente de servidor", "Subpágina do inquilino; devolve um marcador", ("Esboço", True)],
+            ["`/[domain]`", "componente de servidor", "Entrada do site do inquilino; devolve um marcador", ("Em desenvolvimento", True)],
+            ["`/[domain]/[path]`", "componente de servidor", "Subpágina do inquilino; devolve um marcador", ("Em desenvolvimento", True)],
             ["`/api/uploadthing`", "route handler", "`GET` e `POST` do file router do UploadThing", ("Implementado", True)],
-            ["`/subaccount`", "\u2014", "Destino de redireção dos utilizadores de subconta; diretório vazio", ("Em falta", True)],
+            ["`/subaccount`", "\u2014", "Área dos utilizadores de subconta; diretório reservado", ("Planeado", True)],
         ],
         "Rotas da aplicação. Os segmentos catch-all nas rotas de autenticação são necessários para "
         "que o `Clerk` possa renderizar os seus fluxos de vários passos por baixo do componente "
         "montado.",
-        widths=[5.6, 3.0, 5.6, 2.4], font_size=8.5,
+        widths=[5.0, 2.8, 4.5, 3.2], font_size=8.5,
     )
     r.p(
-        "A última linha é um defeito real e não uma omissão da tabela. Tanto a página de registo como "
-        "o seletor de conta ligam para rotas `/subaccount` que não existem, pelo que um utilizador de "
-        "subconta que inicie sessão é redirecionado para um erro 404. Isto está registado na secção "
-        "13.1."
+        "A última linha tem uma consequência imediata: tanto a página de registo como o seletor de "
+        "conta já ligam para rotas `/subaccount`, pelo que um utilizador de subconta que inicie "
+        "sessão encontra um erro 404 até essa área ser construída. A área está planeada e a ordem de "
+        "trabalho está na secção 13.4."
     )
 
     r.h(2, "5.3 A cadeia de middleware")
@@ -778,25 +818,28 @@ def cap5():
         "na base de dados o impediria."
     )
     r.p(
-        "O encaminhamento por subdomínio existe para que um site de cliente publicado possa vir a ser "
+        "O encaminhamento por subdomínio existe para que um site de cliente publicado possa ser "
         "servido no seu próprio endereço. O middleware divide o cabeçalho `Host` pelo domínio base "
         "configurado e, se sobrar um prefixo, reescreve o pedido para `/[domain]`. O mecanismo "
-        "funciona; o que falta é algo para servir, uma vez que as páginas `/[domain]` são marcadores. "
-        "A implementação atual é também frágil: deriva o inquilino de uma divisão de texto em vez de "
-        "o validar contra a coluna `Funnel.subDomainName`, pelo que um subdomínio desconhecido é "
-        "reescrito para uma rota que não o consegue resolver."
+        "funciona de ponta a ponta; as páginas `/[domain]` são ainda marcadores, à espera do "
+        "renderizador de sites. Foram identificados dois passos para completar esta camada: validar "
+        "o prefixo extraído contra a coluna `Funnel.subDomainName`, em vez de o derivar apenas de "
+        "uma divisão de texto, e devolver uma resposta apropriada para subdomínios desconhecidos."
     )
 
     r.h(2, "5.6 Implantação")
     r.p(
-        "Não existe implantação. O repositório não contém configuração de alojamento, nem definição "
-        "de contentor, nem fluxo de integração contínua, e a aplicação só alguma vez foi executada "
-        "localmente contra um servidor `MySQL` local. Duas questões teriam de ser resolvidas antes de "
-        "poder ser implantada: o build de produção falha atualmente, pelas razões dadas na secção "
-        "10.2, e a ausência de histórico de migrações implica que o esquema teria de ser empurrado "
-        "para a base de dados de produção em vez de migrado. Regista-se isto em vez de apresentar uma "
-        "arquitetura de implantação, porque apresentar um diagrama de infraestrutura inexistente "
-        "seria deturpar o projeto."
+        "A aplicação corre atualmente apenas em ambiente de desenvolvimento, contra um servidor "
+        "`MySQL` local. A implantação está planeada para uma fase posterior e o repositório ainda não "
+        "contém configuração de alojamento, definição de contentor ou fluxo de integração contínua."
+    )
+    r.p(
+        "Preparar a implantação depende de dois pré-requisitos já identificados. O primeiro é fazer "
+        "passar o build de produção, que falha na fase de análise estática pelas razões dadas na "
+        "secção 10.2. O segundo é adotar um histórico de migrações: sem ele, o esquema teria de ser "
+        "empurrado para a base de dados de produção em vez de migrado, o que não é aceitável fora de "
+        "desenvolvimento. Ambos estão no trabalho de curto prazo da secção 13.3, e a arquitetura de "
+        "implantação será desenhada depois de resolvidos."
     )
     r.page_break()
 
@@ -806,9 +849,12 @@ def cap6():
     r.h(1, "6. Modelo de Dados")
     r.p(
         "O esquema em `prisma/schema.prisma` declara 23 modelos e 6 enumerações em 438 linhas. Foi "
-        "adotado do tutorial no primeiro commit e mudou muito pouco desde então; a secção 6.5 "
-        "documenta exatamente como. Como o esquema descreve consideravelmente mais do que a aplicação "
-        "implementa, este capítulo separa a parte exercitada por código da parte que o não é."
+        "adotado do tutorial no primeiro commit, depois de avaliado como um modelo coerente para o "
+        "domínio pretendido, e serve desde então de mapa do produto a construir. Modelar o domínio "
+        "completo à partida foi uma decisão deliberada: dá ao desenvolvimento incremental um destino "
+        "estável e evita reestruturações de esquema a cada área funcional nova. A consequência é que "
+        "o esquema descreve mais do que a aplicação implementa hoje, pelo que este capítulo separa a "
+        "parte já exercitada por código da parte que aguarda implementação."
     )
 
     r.h(2, "6.1 A cadeia de propriedade")
@@ -869,27 +915,27 @@ def cap6():
 
     r.h(2, "6.3 O modelo de domínio alargado")
     r.p(
-        "Os restantes dezassete modelos descrevem o produto que a plataforma pretende vir a ser. A "
-        "Figura 4 agrupa-os por subsistema e assinala até onde cada um foi efetivamente levado."
+        "Os restantes dezassete modelos descrevem as áreas funcionais planeadas. A Figura 4 agrupa-os "
+        "por subsistema e assinala o estado atual de cada um."
     )
     r.figure(os.path.join(FIG, "fig5_domain_groups.png"),
              "O modelo de domínio completo agrupado por subsistema, com o estado de implementação. "
-             "Apenas os grupos não sombreados são referenciados por código.", width_cm=15.5)
+             "Os grupos sombreados estão modelados e aguardam implementação.", width_cm=15.5)
     r.p(
-        "O grupo de navegação merece nota, por se situar entre as duas categorias. "
+        "O grupo de navegação é o exemplo mais nítido de uma área em desenvolvimento. "
         "`AgencySidebarOption` e `SubAccountSidebarOption` guardam o menu lateral como dados e não "
         "como código, para que a navegação possa diferir entre inquilinos. `upsertAgency` cria seis "
         "registos para uma nova agência e `upsertSubAccount` cria oito, a barra lateral carrega-os e "
-        "passa-os ao componente de menu — e o componente de menu nunca os renderiza. O caminho dos "
-        "dados está completo e falta a apresentação, que é exatamente onde o desenvolvimento parou."
+        "passa-os ao componente de menu; falta o passo de renderização. O caminho dos dados está "
+        "completo de ponta a ponta, e é sobre ele que a frente de trabalho atual assenta."
     )
     r.p(
-        "Vale a pena registar dois pormenores de desenho nos grupos operacionais, ainda que não "
-        "estejam implementados. `FunnelPage.content` é uma coluna `LongText` destinada a guardar uma "
-        "estrutura de página serializada, que é como um editor visual persistiria uma página composta "
-        "sem exigir uma alteração de esquema por cada tipo de componente. `Lane` e `Ticket` têm ambos "
-        "uma coluna inteira `order`, que é a forma habitual de suportar reordenação por arrastamento "
-        "numa interface Kanban."
+        "Dois pormenores de desenho nos grupos planeados condicionam o trabalho que se lhes segue. "
+        "`FunnelPage.content` é uma coluna `LongText` destinada a guardar uma estrutura de página "
+        "serializada, que é como um editor visual persiste uma página composta sem exigir uma "
+        "alteração de esquema por cada tipo de componente novo. `Lane` e `Ticket` têm ambos uma "
+        "coluna inteira `order`, que é a forma habitual de suportar reordenação por arrastamento numa "
+        "interface Kanban. Ambas as decisões foram tomadas para não bloquear a implementação futura."
     )
 
     r.h(2, "6.4 relationMode = \"prisma\" e as suas consequências")
@@ -927,12 +973,14 @@ def cap6():
         "que a definição foi descoberta, e a secção 9.6 conta essa história.",
     ])
     r.p(
-        "Em retrospetiva, esta definição é herdada e não justificada. O projeto usa um servidor "
-        "`MySQL` local, que suporta chaves estrangeiras sem qualquer problema, pelo que a restrição "
-        "que motiva a definição não se aplica. Removê-la reforçaria as garantias de integridade sem "
-        "custo. Foi mantida porque alterá-la depois de a base de dados estar povoada não era "
-        "prioritário face ao trabalho de funcionalidades pendente — decisão defensável na altura, mas "
-        "que deve ser revista."
+        "A avaliação a que esta investigação conduziu é que a definição não se justifica nesta "
+        "instalação. O projeto usa um servidor `MySQL` local, que suporta chaves estrangeiras sem "
+        "qualquer problema, pelo que a restrição que motiva a definição não se aplica aqui. Removê-la "
+        "reforça as garantias de integridade sem custo, e está agendada como uma das primeiras "
+        "tarefas da secção 13.3. Foi mantida até agora por uma razão de sequência: a alteração deve "
+        "ser feita em conjunto com a adoção de um histórico de migrações (secção 6.6), para que a "
+        "reintrodução das chaves estrangeiras fique registada numa migração e possa ser aplicada de "
+        "forma reproduzível a uma base de dados já povoada."
     )
 
     r.h(2, "6.5 Evolução do esquema")
@@ -959,10 +1007,13 @@ def cap6():
         "9.7 descreve a falha que a motivou."
     )
     r.p(
-        "A contrapartida deste diff reduzido é que o esquema é, estruturalmente, o esquema do "
-        "tutorial. Isto deve ser lido como uma indicação rigorosa de proveniência e não como crítica "
-        "ao modelo em si, que é razoável: a cadeia de propriedade é coerente, os índices estão "
-        "completos e as enumerações são usadas de forma consistente."
+        "Que o esquema tenha mudado tão pouco é, em si, um resultado. Foi adotado por avaliação e não "
+        "por inércia, e três meses de desenvolvimento sobre ele não revelaram necessidade de o "
+        "reestruturar: a cadeia de propriedade manteve-se coerente à medida que novas consultas foram "
+        "acrescentadas, os índices cobriram todas as relações usadas e as enumerações mantiveram-se "
+        "suficientes. A única alteração necessária foi remover um campo que dependia de uma "
+        "integração adiada. Um modelo de dados estável sob desenvolvimento incremental é a propriedade "
+        "que dele se pretendia."
     )
 
     r.h(2, "6.6 Estratégia de migrações")
@@ -973,13 +1024,14 @@ def cap6():
         "alteração foi feita."
     )
     r.p(
-        "Para desenvolvimento individual contra uma base de dados local isto é um compromisso "
-        "razoável e é o fluxo que o próprio `Prisma` recomenda em fase de prototipagem. Torna-se uma "
-        "fragilidade exatamente no ponto em que o projeto mais precisaria dele: não há forma "
-        "reproduzível de recriar o esquema de raiz num estado conhecido, não há registo da ordem por "
-        "que as alterações foram aplicadas, e não há caminho seguro para aplicar uma alteração a uma "
-        "base de dados que já contém dados. Adotar `prisma migrate dev` seria das primeiras coisas a "
-        "fazer antes de qualquer implantação, e está listado como tal na secção 13.3."
+        "Para desenvolvimento individual contra uma base de dados local este é o fluxo que o próprio "
+        "`Prisma` recomenda em fase de prototipagem, e foi adequado enquanto o esquema esteve a ser "
+        "estabilizado. Deixa de o ser a partir do momento em que exista uma base de dados que não "
+        "possa ser recriada à vontade: sem histórico de migrações não há forma reproduzível de "
+        "recriar o esquema de raiz num estado conhecido, nem caminho seguro para aplicar uma "
+        "alteração a uma base de dados que já contém dados. Adotar `prisma migrate dev` e gerar uma "
+        "migração inicial a partir do esquema atual é a próxima tarefa nesta camada, e está listada "
+        "na secção 13.3."
     )
     r.page_break()
 

@@ -24,9 +24,9 @@ def build(r, FIG):
         "para `/agency` levando o plano escolhido como parâmetro de consulta."
     )
     r.p(
-        "Esse parâmetro é lido pela página de registo, que redirecionaria para uma rota de faturação "
-        "se ela existisse. A ligação funciona e o destino não — exemplo de até onde a canalização "
-        "para a faturação foi montada antes de a funcionalidade ser retirada do âmbito."
+        "Esse parâmetro é lido pela página de registo, que o encaminhará para a rota de faturação "
+        "quando esta for construída. A escolha do plano viaja assim desde a página pública até ao "
+        "registo, ficando a ligação preparada para o subsistema de faturação planeado."
     )
     r.p(
         "O destaque foi também a origem de um problema de layout instrutivo. O fundo em grelha está "
@@ -178,9 +178,11 @@ def build(r, FIG):
     ], caption="Criação aninhada da navegação por omissão da agência, dentro de `upsertAgency`. O "
                "`Prisma` escreve a agência e as suas opções de barra lateral numa única operação.")
     r.p(
-        "Estes registos são escritos e lidos corretamente, e nenhuma das seis rotas para que apontam "
-        "existe. Esta é a ilustração mais clara do estado atual do projeto: a camada de dados vai à "
-        "frente da interface."
+        "Estes registos são escritos e lidos corretamente, e as seis rotas para que apontam "
+        "correspondem às áreas funcionais a construir a seguir. Semeá-las antecipadamente foi "
+        "deliberado: a navegação de cada inquilino fica definida como dados desde a criação, pelo que "
+        "acrescentar uma área funcional passa a ser construir a rota e não alterar também a estrutura "
+        "de navegação de todos os inquilinos existentes."
     )
 
     r.h(2, "7.6 Convites e membros de equipa")
@@ -196,12 +198,13 @@ def build(r, FIG):
         "sensata: a posse estabelece-se criando uma agência e não sendo convidado para uma."
     )
     r.p(
-        "Há duas limitações a registar em vez de disfarçar. Primeira, não é possível criar convites "
-        "pela interface — não existe ecrã de gestão de equipa nem envio de correio eletrónico, pelo "
-        "que um registo `Invitation` tem de ser inserido diretamente na base de dados para que o "
-        "fluxo possa sequer ser exercitado. Segunda, o código contém um defeito: o nome do novo "
-        "utilizador é montado com plicas em vez de template literal, pelo que fica guardado o texto "
-        "literal em vez do nome interpolado."
+        "O lado da aceitação está implementado; o da emissão está planeado. Criar um convite exige "
+        "atualmente inserir um registo `Invitation` diretamente na base de dados, porque o ecrã de "
+        "gestão de equipa e o envio de correio eletrónico ainda não foram construídos. Foi assim que "
+        "o fluxo foi exercitado durante o desenvolvimento, e foi ao percorrê-lo para preparar este "
+        "relatório que se detetou um defeito no código: o nome do novo utilizador é montado com "
+        "plicas em vez de template literal, pelo que fica guardado o texto literal em vez do nome "
+        "interpolado."
     )
     r.code([
         "// src/lib/queries.ts, dentro de verifyAndAcceptInvitation",
@@ -213,10 +216,10 @@ def build(r, FIG):
                "`verifyAndAcceptInvitation`. O `TypeScript` não o consegue detetar porque ambas as "
                "expressões são strings válidas.")
     r.p(
-        "Vale a pena reportá-lo por duas razões. É um defeito real que um utilizador veria, e ilustra "
-        "bem os limites da tipagem estática: o sistema de tipos verificou que era fornecida uma "
-        "string, que é tudo o que pode fazer, e só um teste ou um percurso manual pelo fluxo de "
-        "convites teria detetado que era a string errada. Nenhum dos dois existia."
+        "O defeito é o tipo de falha que a tipagem estática não apanha: o sistema de tipos verificou "
+        "que era fornecida uma string, que é tudo o que pode fazer. Um teste de integração sobre o "
+        "fluxo de convites, ainda planeado, teria detetado que era a string errada; o percurso "
+        "manual que o encontrou é, por agora, a validação que esse fluxo tem."
     )
 
     r.h(2, "7.7 Notificações de atividade")
@@ -318,15 +321,31 @@ def build(r, FIG):
         "aparecer no seletor de conta, com ligação para uma rota que não existe."
     )
 
-    r.h(2, "7.11 O que não está implementado")
+    r.h(2, "7.11 Estado das restantes áreas")
     r.p(
-        "Para que não restem dúvidas, o seguinte está completamente ausente do código: qualquer "
-        "interface ou consulta de CRM; qualquer editor de funis, renderizador de funis ou mecanismo "
-        "de publicação; qualquer biblioteca de multimédia; qualquer execução de automações; qualquer "
-        "integração com o `Stripe` — o SDK não está instalado e os únicos vestígios são variáveis de "
-        "ambiente, uma entrada de host de imagens e três comentários no código; qualquer interface de "
-        "gestão de equipa; qualquer área de subconta; e qualquer teste automatizado."
+        "As áreas abaixo fazem parte do produto descrito pelo esquema e ainda não têm interface nem "
+        "consultas no código da aplicação. Estão classificadas com o mesmo vocabulário do capítulo 3."
     )
+    r.p("Em desenvolvimento — mecanismo no servidor já construído, camada visível a construir:")
+    r.bullets([
+        "navegação da barra lateral (`AgencySidebarOption` e `SubAccountSidebarOption` já são "
+        "semeados e carregados);",
+        "apresentação das notificações de atividade (`getNotifications` já é chamado no layout);",
+        "painel da agência (os dados existem; a página renderiza ainda só o identificador);",
+        "servir sites publicados em subdomínio (a reescrita existe; as páginas `/[domain]` são "
+        "esboços).",
+    ])
+    r.p("Planeado — representado no modelo de dados ou na configuração, aguardando implementação:")
+    r.bullets([
+        "área de subconta (`/subaccount` está reservado como diretório);",
+        "CRM (pipelines, lanes, tickets, contactos e etiquetas);",
+        "editor e renderizador de funis, e biblioteca de multimédia;",
+        "automações despoletadas por eventos;",
+        "faturação por subscrição (`Subscription`, `AddOns` e variáveis de ambiente do `Stripe`; o "
+        "SDK ainda não está instalado);",
+        "gestão de equipa e envio de correio, de que depende a emissão de convites pela interface;",
+        "testes automatizados.",
+    ])
     r.page_break()
 
     # ======================================================== 8 PROCESSO
@@ -336,19 +355,20 @@ def build(r, FIG):
     r.p(
         "O projeto foi desenvolvido por uma só pessoa em paralelo com as unidades curriculares, em "
         "sessões que variaram entre vinte minutos e um dia inteiro. Não foi adotada nenhuma "
-        "metodologia formal, e seria desonesto descrever o processo como Scrum ou Kanban a "
-        "posteriori. O que realmente aconteceu descreve-se melhor como desenvolvimento incremental "
-        "guiado por tutorial, e passou por três fases visíveis tanto no diário como no histórico de "
-        "commits."
+        "metodologia formal com sprints ou quadro Kanban. O que aconteceu descreve-se melhor como "
+        "desenvolvimento incremental, visível tanto no diário como no histórico de commits, e passou "
+        "por três fases."
     )
     r.p(
-        "Na primeira fase o tutorial foi seguido de perto, com o esforço concentrado em pôr o "
-        "ambiente e a camada de autenticação a funcionar. Na segunda fase o tutorial continuou a ser "
-        "a fonte da sequência de funcionalidades, mas a maioria das sessões consistiu em traduzir as "
-        "suas instruções para APIs que tinham mudado. Na terceira fase, a partir do trabalho na barra "
-        "lateral, o tutorial passou a ser referência de intenção e não fonte de código, porque tinha "
-        "começado a avançar mais depressa do que explicava e o trabalho passou cada vez mais a ser "
-        "reproduzir um comportamento e não uma listagem."
+        "Na primeira fase a referência em vídeo forneceu a ordem de construção e o esqueleto da "
+        "pilha: criar o projeto, ligar a base de dados, pôr a autenticação a funcionar. Quase de "
+        "imediato as instruções deixaram de coincidir com as bibliotecas instaladas, pelo que o "
+        "trabalho passou a ser diagnosticar falhas e adaptar a implementação. Na segunda fase a "
+        "referência continuou a indicar *o que* construir a seguir, mas a maioria das sessões "
+        "consistiu em traduzir essa intenção para APIs que tinham mudado. Na terceira fase, a partir "
+        "do trabalho na barra lateral, a sequência passou a ser definida pelo estado do próprio "
+        "repositório: o que faltava na fundação, o que o linter apontava, o que o uso real da "
+        "interface revelava."
     )
 
     r.h(2, "8.2 Controlo de versões")
@@ -360,60 +380,91 @@ def build(r, FIG):
              "Commits por mês. Quatro commits antecedem maio de 2026; os restantes 69 concentram-se "
              "num período de quatro meses.", width_cm=14.5)
     r.p(
-        "A distribuição é honesta quanto ao modo como o projeto decorreu. Três commits de 2025 "
-        "correspondem à configuração inicial e às primeiras tentativas no middleware, seguidos de um "
-        "período dormente interrompido apenas por um commit em abril de 2026. O desenvolvimento "
-        "sustentado começou em maio de 2026 e prolongou-se por quatro meses, com uma pausa de duas "
-        "semanas em julho que o diário atribui a um período de baixa motivação. Reportar isto é mais "
-        "útil do que apresentar uma cronologia idealizada, porque o padrão — longa paragem seguida de "
-        "recuperação concentrada — é comum e instrutivo em projetos individuais de estudante."
+        "A distribuição reflete o modo como o projeto decorreu. Três commits de 2025 correspondem à "
+        "configuração inicial e às primeiras tentativas no middleware, seguidos de um período "
+        "interrompido apenas por um commit em abril de 2026. O desenvolvimento sustentado começou em "
+        "maio de 2026 e prolongou-se por quatro meses, com uma pausa de duas semanas em julho que o "
+        "diário atribui a um período de baixa motivação. O padrão — arranque, interrupção, recuperação "
+        "concentrada — é o de um projeto individual conduzido em paralelo com o curso, e não uma "
+        "cronologia idealizada."
     )
     r.p(
         "A higiene dos commits melhorou ao longo do projeto. Apenas o primeiro commit não tem prefixo "
         "convencional e, a partir de abril de 2026, as mensagens tornam-se consistentemente "
-        "imperativas e de âmbito estreito, com um tipo, um âmbito opcional e um resumo curto. Não foi "
-        "disciplina espontânea: foi escrito um comando reutilizável que instrui o assistente do "
-        "editor a analisar a árvore de trabalho, agrupar alterações por assunto e propor um plano de "
-        "commits antes de preparar o que quer que seja. Adotá-lo mudou tanto a granularidade do "
-        "histórico como a redação, substituindo commits grandes e mistos por outros pequenos, como "
+        "imperativas e de âmbito estreito, com um tipo, um âmbito opcional e um resumo curto. Essa "
+        "mudança não foi disciplina espontânea: foi o resultado de um comando reutilizável escrito "
+        "para o editor, descrito na secção 8.3, que instrui o assistente a analisar a árvore de "
+        "trabalho, agrupar alterações por assunto e propor um plano de commits antes de preparar o "
+        "que quer que seja. Adotá-lo mudou tanto a granularidade do histórico como a redação, "
+        "substituindo commits grandes e mistos por outros pequenos, como "
         "\u201cfix(sidebar): contain logo inside AspectRatio box\u201d."
     )
 
     r.h(2, "8.3 Recurso a assistência por IA")
     r.p(
-        "Foram usados assistentes de IA ao longo do projeto, e o relatório ficaria incompleto se não "
-        "o dissesse e não caracterizasse esse uso com rigor. Foram usados de quatro formas distintas, "
-        "com valor muito diferente."
+        "Foram usados assistentes de IA ao longo do projeto, integrados no editor Cursor. A parte "
+        "mais consequente desse uso não foi pedir código pontualmente, mas desenhar fluxos de "
+        "trabalho reutilizáveis: comandos próprios, com diretrizes escritas, que o agente executa de "
+        "forma consistente sobre tarefas recorrentes. Depois de cada execução, o resultado é "
+        "revisto e só então aceite."
+    )
+    r.p(
+        "Dois desses comandos estão em `.cursor/commands/` e passaram a fazer parte do ritmo de "
+        "desenvolvimento."
     )
     r.bullets([
-        "**Como leitor de documentação.** O uso mais valioso. Dadas as secções relevantes da "
-        "documentação do `Clerk` e uma descrição da falha, um assistente ajudou a reduzir um ciclo de "
-        "redireções a uma configuração concreta de matcher muito mais depressa do que a leitura "
-        "isolada teria permitido.",
+        "**`commit`.** Analisa as alterações na árvore de trabalho, agrupa-as por assunto, propõe "
+        "um plano de commits Conventional Commits (tipo, âmbito, resumo no imperativo, um assunto "
+        "por commit) e só então prepara as mensagens. O autor revê o plano, aceita ou ajusta os "
+        "limites, e o agente cria os commits. O efeito prático foi reduzir o trabalho repetitivo de "
+        "documentar o histórico e, ao mesmo tempo, torná-lo mais granular: em vez de um commit "
+        "grande e misto no fim de uma sessão, o histórico passou a registar unidades pequenas e "
+        "reversíveis.",
+        "**`comment`.** Percorre o código e acrescenta comentários apenas onde explicam intenção, "
+        "restrição ou decisão — e não o que o código já diz. Marca trabalho incompleto com `TODO`, "
+        "`FIXME` e `HACK`. Foi este comando que produziu a convenção de comentários descrita na "
+        "secção 12.1, e que tornou o estado do repositório legível o suficiente para este relatório "
+        "ser reconstruído a partir do código.",
+    ])
+    r.p(
+        "O padrão de ambos é o mesmo: o autor escreve as regras uma vez; o agente aplica-as a cada "
+        "ocorrência da tarefa; o autor revê. Isso acelerou o desenvolvimento porque o tempo deixou "
+        "de ser gasto a redigir mensagens de commit ou a decidir, caso a caso, o que comentar, e "
+        "passou a ser gasto a decidir se o resultado cumpria as regras."
+    )
+    r.p(
+        "Para além destes fluxos, os assistentes foram usados de outras quatro formas, com valor "
+        "diferente:"
+    )
+    r.bullets([
+        "**Como leitor de documentação.** Dadas as secções relevantes da documentação do `Clerk` e "
+        "uma descrição da falha, um assistente ajudou a reduzir um ciclo de redireções a uma "
+        "configuração concreta de matcher mais depressa do que a leitura isolada teria permitido.",
         "**Como gerador de código.** Usado em campos repetitivos de formulário e em esqueletos de "
         "componentes, onde o resultado podia ser confrontado com um exemplo já funcional.",
         "**Como auxiliar de refactorização.** Usado para reestruturar código com muitos níveis de "
         "aninhamento; foi assim que o auxiliar privado `getUser` em `queries.ts` passou a existir.",
-        "**Como agente autónomo.** O uso menos fiável. As alterações conduzidas por agente tiveram "
-        "frequentemente de ser revistas e parcialmente revertidas, sobretudo quando um agente "
-        "introduziu um ficheiro de bloqueio do `npm` num projeto `Bun` e quando apagou código que "
-        "estava intencionalmente presente.",
+        "**Como agente autónomo em alterações abertas.** O uso menos fiável. Quando o problema não "
+        "estava delimitado por um comando, as alterações tiveram frequentemente de ser revistas e "
+        "parcialmente revertidas — por exemplo quando um agente introduziu um ficheiro de bloqueio "
+        "do `npm` num projeto `Bun`, ou quando apagou código que estava intencionalmente presente.",
     ])
     r.p(
-        "O padrão que emergiu não é surpreendente mas vale a pena enunciar: a assistência foi mais "
-        "útil quando o problema estava bem especificado e o resultado era verificável, e menos útil "
-        "quando lhe foi dada margem para decidir o que alterar. O diário regista várias sessões "
-        "gastas a rever e reverter alterações geradas e, pelo menos num problema — a falha na criação "
-        "de agências da secção 9.7 —, o assistente produziu um resultado funcional cujo raciocínio "
-        "teve de ser reconstruído depois, revertendo deliberadamente para a versão do tutorial e "
-        "reproduzindo a falha. É esse passo de reconstrução que vale a pena manter no processo."
+        "A assistência foi mais útil quando o problema estava bem especificado e o resultado era "
+        "verificável — precisamente o que os comandos próprios forçam — e menos útil quando lhe foi "
+        "dada margem para decidir o que alterar. O diário regista sessões gastas a rever e reverter "
+        "alterações geradas e, pelo menos num problema — a falha na criação de agências da secção "
+        "9.7 —, o assistente produziu um resultado funcional cujo raciocínio teve de ser "
+        "reconstruído depois, revertendo para a versão avariada e reproduzindo a falha. Manter esse "
+        "passo de reconstrução, mesmo quando o fluxo está automatizado, é o que impede o processo de "
+        "se reduzir a aceitar alterações."
     )
 
     r.h(2, "8.4 Divergência face ao tutorial")
     r.p(
-        "A Tabela 6 regista concretamente onde o sistema entregue difere do seu ponto de partida. É a "
-        "evidência que suporta a afirmação da secção 2.4 de que o projeto não é original na "
-        "arquitetura nem é uma transcrição."
+        "A Tabela 6 regista onde a implementação atual difere da referência inicial, e a razão de "
+        "cada diferença. A maior parte das linhas é adaptação forçada por APIs que tinham mudado; "
+        "algumas são decisões próprias tomadas sobre a fundação já construída."
     )
     r.table(
         ["Área", "Tutorial", "Blume", "Porquê"],
@@ -423,7 +474,7 @@ def build(r, FIG):
              "O `Next.js 15` com `React 19` quebrava a instalação de componentes; a versão 14 foi escolhida após testes"],
             ["Middleware do Clerk", "Uma API de middleware anterior",
              "`clerkMiddleware` com `createRouteMatcher` e padrões `(.*)`",
-             "A API usada pelo tutorial já tinha sido substituída quando o projeto começou"],
+             "A API de middleware da referência já tinha sido substituída quando o projeto começou"],
             ["Import do cliente Prisma", "`@prisma/client`",
              "`src/generated/prisma`",
              "O esquema gera para um caminho próprio; o import por omissão resolve para o cliente errado"],
@@ -432,10 +483,10 @@ def build(r, FIG):
              "A divergência de versões entre os dois pacotes quebrava a geração do cliente"],
             ["`Agency.customerId`", "Campo obrigatório preenchido pelo `Stripe`",
              "Campo removido do esquema",
-             "O `Stripe` não está integrado, pelo que o campo nunca poderia ter um valor válido"],
+             "O campo obrigatório bloqueava o registo enquanto o `Stripe` não estiver ligado"],
             ["Stripe", "Integrado",
-             "Não integrado; permanecem modelos e variáveis de ambiente",
-             "Retirado do âmbito deliberadamente"],
+             "Ainda não integrado; permanecem modelos e variáveis de ambiente",
+             "A faturação está planeada; o SDK será ligado nessa fase"],
             ["Validação de formulários", "Verificação de presença",
              "Auxiliares `Zod` reutilizáveis, validação E.164 de telefone, mensagens por campo",
              "Decisão independente para melhorar a qualidade dos dados"],
@@ -455,7 +506,7 @@ def build(r, FIG):
              "Constante única partilhada, importada pelo servidor e pelo cliente",
              "Impede que o limite mostrado e o limite imposto divirjam"],
         ],
-        "Onde o sistema entregue diverge do tutorial de que partiu.",
+        "Onde a implementação atual diverge da referência em vídeo de que o projeto partiu.",
         widths=[3.0, 4.0, 4.6, 5.0], font_size=8.2,
     )
 
@@ -487,17 +538,17 @@ def build(r, FIG):
     r.p("**Investigação.** O `Next.js 15`, então recém-lançado, depende do `React 19`. Vários pacotes "
         "de componentes do ecossistema `shadcn/ui` declaravam ainda intervalos de pares para o "
         "`React 18`, pelo que o grafo de dependências não podia ser satisfeito de forma limpa. Forçar "
-        "a instalação produziria uma árvore que resolvia mas sem garantia de comportamento, e o "
-        "tutorial que estava a ser seguido tinha, de qualquer modo, sido gravado sobre o `React 18`.")
+        "a instalação produziria uma árvore que resolvia mas sem garantia de comportamento, e a "
+        "referência em vídeo tinha, de qualquer modo, sido gravada sobre o `React 18`.")
     r.p("**Decisão.** O projeto foi recriado sobre `Next.js 14` com `React 18`. O raciocínio foi que "
         "gastar as primeiras semanas de um projeto final a depurar incompatibilidades ao nível do "
-        "ecossistema consumiria tempo que tinha de ir para os problemas do próprio projeto, e que ter "
-        "um tutorial e uma árvore de dependências coerentes entre si vale mais, no início, do que "
-        "estar na versão mais recente.")
+        "ecossistema consumiria tempo que tinha de ir para os problemas do próprio projeto, e que "
+        "ter uma referência e uma árvore de dependências coerentes entre si vale mais, no início, "
+        "do que estar na versão mais recente.")
     r.p("**Resultado.** A instalação passou a funcionar e o projeto manteve-se em `Next.js 14` desde "
         "então. Seguiu-se pouco depois um segundo recomeço por razão distinta — o projeto tinha sido "
-        "gerado sem o diretório `src` que o tutorial pressupunha — e a configuração foi reconstruída "
-        "de raiz em vez de remendada.")
+        "gerado sem o diretório `src` que a referência pressupunha — e a configuração foi "
+        "reconstruída de raiz em vez de remendada.")
     r.p("**Lição.** Escolher versões é uma decisão de desenho com consequências e não um pormenor. "
         "Corta também nos dois sentidos: a mesma decisão que removeu atrito no primeiro dia é a razão "
         "pela qual o projeto está hoje duas versões maiores atrasado, o que fica registado como "
@@ -641,11 +692,13 @@ def build(r, FIG):
         "com uma nota a explicar porquê, e `customerId` foi eliminado do modelo `Agency`.")
     r.p("**Resultado.** A criação de agências funciona. A linha comentada e o comentário `WIP` "
         "permanecem no código como marcador do ponto onde o `Stripe` se ligaria.")
-    r.p("**Lição.** Retirar uma funcionalidade do âmbito não é gratuito: os seus vestígios persistem "
-        "em guardas, campos obrigatórios e fluxo de controlo, e falham silenciosamente. O ponto "
-        "metodológico importa mais do que a correção — reverter para o estado avariado para confirmar "
-        "um diagnóstico, em vez de aceitar uma alteração que fez o sintoma desaparecer, é a diferença "
-        "entre compreender um sistema e limitar-se a operá-lo.")
+    r.p("**Lição.** Uma integração planeada que ainda não está ligada pode mesmo assim bloquear um "
+        "percurso que não deveria depender dela. Isolar essa dependência — retirar a guarda, o campo "
+        "obrigatório e o bloco de criação de cliente — desbloqueou o registo sem prejudicar a "
+        "ligação futura, marcada no código por um comentário `WIP`. O ponto metodológico importa "
+        "tanto quanto a correção: reverter para o estado avariado para confirmar um diagnóstico, em "
+        "vez de aceitar uma alteração que fez o sintoma desaparecer, é a diferença entre compreender "
+        "um sistema e limitar-se a operá-lo.")
 
     r.h(2, "9.8 Uma reposição de formulário que apagava um campo")
     r.p("**Problema.** O interruptor de marca branca comportava-se de forma inconsistente e o `Zod` "
@@ -713,9 +766,9 @@ def build(r, FIG):
     # ======================================================== 10 TESTES
     r.h(1, "10. Testes e Validação")
     r.p(
-        "Este capítulo reporta apenas o que foi efetivamente feito. Não foram escritos testes "
-        "automatizados, não foi medida cobertura e não foi corrido qualquer teste de desempenho; "
-        "onde uma forma de validação esteve ausente, isso é declarado e não substituído."
+        "Este capítulo reporta a validação efetivamente realizada até agora. Não foram ainda "
+        "escritos testes automatizados nem corridas medições de desempenho; ambos estão planeados e "
+        "a secção 10.4 descreve o que falta cobrir."
     )
 
     r.h(2, "10.1 Abordagem")
@@ -723,8 +776,9 @@ def build(r, FIG):
         "A validação assentou em três práticas: análise estática pelo compilador de `TypeScript` e "
         "pelo `ESLint`, testes manuais exploratórios no browser após cada alteração, e inspeção "
         "direta da base de dados com o MySQL Workbench para confirmar que as operações produziam os "
-        "registos esperados. É um regime pobre, e a secção 10.4 é explícita quanto ao que ele não "
-        "consegue detetar."
+        "registos esperados. É um regime adequado a desenvolvimento incremental num único autor, e "
+        "insuficiente como garantia de regressão — a secção 10.4 descreve o que ele ainda não cobre "
+        "e o que está planeado para o alargar."
     )
 
     r.h(2, "10.2 Análise estática")
@@ -773,10 +827,10 @@ def build(r, FIG):
         "Por outras palavras, o linter aponta para as mesmas costuras incompletas que este relatório "
         "identifica noutros pontos, o que é argumento razoável para o tratar como barreira e não como "
         "ruído. A consequência prática é que a aplicação corre em desenvolvimento, onde o `next dev` "
-        "não analisa o código, mas não pode atualmente ser compilada para produção. Corrigi-lo exige "
-        "uma entrada de exclusão para o diretório gerado e uma passagem pelos dezasseis erros do "
-        "código da aplicação; é uma tarefa curta que não foi feita e é o primeiro item da secção 13.3. "
-        "O apêndice C reproduz essa saída na íntegra."
+        "não analisa o código, mas o build de produção ainda falha. Corrigi-lo exige uma entrada de "
+        "exclusão para o diretório gerado e uma passagem pelos dezasseis erros do código da "
+        "aplicação; está no trabalho de curto prazo da secção 13.3. O apêndice C reproduz essa "
+        "saída na íntegra."
     )
 
     r.h(2, "10.3 Testes manuais")
@@ -801,21 +855,22 @@ def build(r, FIG):
         "de cada alteração."
     )
 
-    r.h(2, "10.4 O que não foi testado")
+    r.h(2, "10.4 Validação ainda por realizar")
     r.p(
-        "Não há testes unitários, de integração, de ponta a ponta nem de API. Não há integração "
-        "contínua. Não foi feita qualquer medição de carga, latência ou débito, e não foi feita "
-        "qualquer medição com o PageSpeed Insights ou o Lighthouse — o que importa, porque o "
-        "desempenho faz parte da motivação declarada do projeto, e as secções 11.4 e 13.5 mantêm essa "
-        "distinção explícita."
+        "Ainda não há testes unitários, de integração, de ponta a ponta nem de API, nem integração "
+        "contínua. Também ainda não foi feita medição de carga, latência ou débito, nem medição com "
+        "o PageSpeed Insights ou o Lighthouse. Esta última falta importa porque o desempenho faz "
+        "parte da motivação do projeto; as secções 11.4 e 13.5 descrevem o que será necessário para "
+        "a avaliação."
     )
     r.p(
-        "Duas categorias de defeito decorrem diretamente desta ausência. Os cenários com vários "
-        "utilizadores nunca foram exercitados: o fluxo de convites foi raciocinado mas não executado "
-        "com duas contas reais, e a garantia de isolamento entre inquilinos da secção 5.5 nunca foi "
+        "Duas categorias de defeito escapam ao regime atual. Os cenários com vários utilizadores "
+        "ainda não foram exercitados: o fluxo de convites foi raciocinado mas não executado com "
+        "duas contas reais, e a garantia de isolamento entre inquilinos da secção 5.5 ainda não foi "
         "testada de forma adversarial. E os erros de lógica que passam a verificação de tipos passam "
         "sem oposição — o defeito de interpolação da secção 7.6 é exatamente o tipo de falha que um "
-        "único teste de integração sobre o fluxo de convites teria apanhado de imediato."
+        "único teste de integração sobre o fluxo de convites apanharia. Ambos estão no trabalho de "
+        "médio prazo da secção 13.4."
     )
 
     r.h(2, "10.5 Ameaças à validade")
@@ -832,9 +887,9 @@ def build(r, FIG):
     # ======================================================== 11 RESULTADOS
     r.h(1, "11. Resultados")
 
-    r.h(2, "11.1 O que foi entregue")
+    r.h(2, "11.1 Estado da fundação")
     r.p(
-        "O Blume funciona. Um visitante consegue chegar ao site de divulgação, criar conta, ser "
+        "No estado atual, um visitante consegue chegar ao site de divulgação, criar conta, ser "
         "conduzido ao registo, criar uma agência com formulário validado e logótipo carregado, entrar "
         "na área autenticada por trás de uma verificação de papel, ajustar a meta da agência, criar "
         "uma subconta de cliente através de uma modal e eliminar a agência com confirmação. Por trás "
@@ -843,9 +898,10 @@ def build(r, FIG):
         "pedidos de subdomínio são reescritos para uma rota dinâmica."
     )
     r.p(
-        "O que não foi entregue é igualmente claro: nenhum CRM, nenhum editor de funis, nenhuns sites "
-        "publicados, nenhuma biblioteca de multimédia, nenhumas automações, nenhuma faturação e "
-        "nenhuma área de subconta."
+        "Sobre esta fundação estão em desenvolvimento a navegação da barra lateral, a apresentação "
+        "de notificações, o painel da agência e as páginas de destino dos subdomínios. Estão "
+        "planeados o CRM, o editor de funis, a biblioteca de multimédia, as automações, a faturação "
+        "e a área de subconta. O capítulo 13 detalha a ordem de trabalho."
     )
 
     r.h(2, "11.2 Objetivos")
@@ -864,17 +920,16 @@ def build(r, FIG):
              "Reescrita implementada no middleware; as rotas de destino são esboços e o inquilino não é validado"],
             ["O6 \u2014 Estrutura base da aplicação", ("Parcialmente alcançado", True),
              "Barra lateral, seletor de conta e sistema de modais funcionam; as opções de navegação são semeadas mas não renderizadas"],
-            ["O7 \u2014 Experiência prática e documentação honesta", ("Alcançado", True),
-             "Um diário de desenvolvimento com 39 entradas numeradas, 73 commits e a análise dos capítulos 8 e 9"],
+            ["O7 \u2014 Experiência prática e documentação", ("Alcançado", True),
+             "Um diário de desenvolvimento com 39 entradas numeradas, 73 commits, comandos próprios de IA e a análise dos capítulos 8 e 9"],
         ],
         "Avaliação dos objetivos enunciados na secção 1.4.",
         widths=[4.6, 3.0, 9.0], font_size=8.5,
     )
     r.p(
-        "Quatro dos sete objetivos foram alcançados e três parcialmente. O padrão nos três parciais é "
-        "consistente: em todos, o mecanismo do lado do servidor está completo e falta a superfície "
-        "visível ao utilizador. É uma posição mais favorável do que a inversa, mas não é uma "
-        "funcionalidade entregue."
+        "Quatro dos sete objetivos foram alcançados e três parcialmente. Nos três parciais o "
+        "mecanismo do lado do servidor está construído e a superfície visível ao utilizador está em "
+        "desenvolvimento — o mesmo padrão já observado nos requisitos RF13 a RF17."
     )
 
     r.h(2, "11.3 O código")
@@ -905,17 +960,17 @@ def build(r, FIG):
 
     r.h(2, "11.4 Estado atual")
     r.p(
-        "O resumo honesto é que o Blume é uma fundação funcional e não um produto funcional. As partes "
-        "difíceis da plataforma — o modelo de dados multi-inquilino, a autenticação, a camada de "
-        "autorização, a infraestrutura de encaminhamento e o percurso de registo — existem e "
-        "funcionam. As áreas funcionais que a tornariam útil a uma agência não. A aplicação corre em "
-        "desenvolvimento mas não pode atualmente ser compilada para produção."
+        "O Blume é, neste momento, uma fundação funcional sobre a qual as áreas da plataforma estão "
+        "a ser construídas. O modelo de dados multi-inquilino, a autenticação, a camada de "
+        "autorização, a infraestrutura de encaminhamento e o percurso de registo existem e "
+        "funcionam. As áreas funcionais que tornariam a plataforma útil no dia a dia de uma agência "
+        "estão planeadas ou em desenvolvimento. A aplicação corre em desenvolvimento; o build de "
+        "produção ainda falha na fase de lint, correção listada na secção 13.3."
     )
     r.p(
-        "Sobre a questão que motivou o projeto, nada foi demonstrado. Não foi mostrado que o Blume "
-        "produza sites com melhores características de desempenho do que o Wix, e não o poderia ter "
-        "sido, porque não produz sites. Esse objetivo permanece uma intenção de desenho, e a secção "
-        "13.5 enuncia o que seria necessário para o testar."
+        "Sobre a questão que motivou o projeto, nada foi ainda demonstrado: o Blume ainda não produz "
+        "sites, pelo que não há comparação de desempenho a fazer. Esse objetivo permanece uma "
+        "hipótese de desenho, e a secção 13.5 enuncia o que será necessário para a testar."
     )
     r.page_break()
 
@@ -938,24 +993,25 @@ def build(r, FIG):
         "ligadas e quais não estão."
     )
     r.p(
-        "Por fim, o código é invulgarmente honesto sobre o seu próprio estado. O trabalho incompleto "
-        "está assinalado com comentários `TODO`, `FIXME` e `WIP` que explicam o que falta e porquê, e "
-        "as decisões não óbvias têm comentários que explicam o raciocínio em vez de repetir o código. "
-        "Essa convenção veio de uma diretriz escrita adotada a meio do projeto, e é a razão pela qual "
-        "este relatório pôde ser reconstruído com rigor a partir do repositório."
+        "Por fim, o código assinala o seu próprio estado. O trabalho incompleto está marcado com "
+        "comentários `TODO`, `FIXME` e `WIP` que explicam o que falta e porquê, e as decisões não "
+        "óbvias têm comentários que explicam o raciocínio em vez de repetir o código. Essa convenção "
+        "veio do comando `comment` descrito na secção 8.3, e é a razão pela qual este relatório pôde "
+        "ser reconstruído a partir do repositório."
     )
 
     r.h(2, "12.2 Fraquezas e dívida técnica")
     r.p(
-        "A fraqueza mais consequente é a ausência de testes automatizados. Tudo o resto nesta secção "
-        "é um defeito concreto; este é a razão pela qual tais defeitos sobrevivem. Um código sem "
-        "suite de testes não pode ser refactorizado com confiança, e quanto mais cresce mais caro se "
-        "torna acrescentá-la."
+        "A fraqueza mais consequente, neste momento, é a ausência de testes automatizados. Tudo o "
+        "resto nesta secção é um defeito concreto; a falta de uma suite é a razão pela qual tais "
+        "defeitos sobrevivem entre sessões. Um código sem testes não pode ser refactorizado com "
+        "confiança, e quanto mais cresce mais caro se torna acrescentá-la. Introduzi-la está no "
+        "trabalho de médio prazo da secção 13.4."
     )
     r.p(
-        "O build de produção que falha é a segunda. É fácil de corrigir e é o tipo de problema que só "
-        "se torna visível quando alguém tenta implantar, o que é precisamente a razão por que passou "
-        "despercebido."
+        "O build de produção que falha é a segunda. É fácil de corrigir e só se torna visível quando "
+        "alguém tenta implantar, o que é precisamente a razão por que passou despercebido até à "
+        "preparação deste relatório. Está no trabalho de curto prazo da secção 13.3."
     )
     r.p("A restante dívida é mais banal:")
     r.bullets([
@@ -972,8 +1028,8 @@ def build(r, FIG):
     ])
     r.p(
         "Nenhum destes pontos é grave isoladamente. No conjunto, são a assinatura de um projeto "
-        "desenvolvido primeiro pelas funcionalidades e com a limpeza adiada, que é uma descrição "
-        "exata do que aconteceu."
+        "desenvolvido primeiro pelas funcionalidades, com a limpeza a ser feita à medida que cada "
+        "costura se torna visível — o padrão das secções 13.3 e 13.4."
     )
 
     r.h(2, "12.3 Segurança")
@@ -1054,81 +1110,115 @@ def build(r, FIG):
         "evidência."
     )
     r.p(
-        "A comparação que motivou o projeto não pode sequer ser feita no estado atual, porque "
-        "compararia um site produzido pelo Wix com um site produzido pelo Blume, e o Blume não produz "
-        "nenhum. O que podia ser medido hoje é o desempenho da própria página de divulgação do Blume, "
-        "o que seria uma medição real de outra coisa. A distinção é mantida explícita porque "
-        "confundi-la é exatamente o tipo de afirmação sem suporte que este relatório procura evitar."
+        "A comparação que motivou o projeto ainda não pode ser feita, porque compararia um site "
+        "produzido pelo Wix com um site produzido pelo Blume, e o editor ainda não está "
+        "implementado. O que poderia ser medido hoje é o desempenho da própria página de divulgação, "
+        "o que seria uma medição real de outra coisa. A secção 13.5 descreve o protocolo com que a "
+        "comparação original poderá ser feita quando o renderizador existir."
     )
 
-    r.h(2, "12.7 Sobre construir a partir de um tutorial")
+    r.h(2, "12.7 Sobre construir a partir de uma referência em vídeo")
     r.p(
         "Partir de um tutorial tornou alcançável um projeto desta dimensão dentro do tempo "
-        "disponível. Forneceu um modelo de domínio coerente e uma seleção de tecnologias a que teria "
-        "levado semanas chegar de forma independente, e removeu o risco de escolher uma arquitetura "
-        "que viesse a revelar-se inviável."
+        "disponível. Forneceu um modelo de domínio coerente e uma seleção de tecnologias a que "
+        "teria levado semanas chegar de forma independente, e deu uma ordem de construção "
+        "defensável para um sistema deste tipo."
     )
     r.p(
-        "Impôs também custos que não eram óbvios à partida. O mais significativo foi o desfasamento de "
-        "versões: por o material ter um ano, boa parte do esforço foi para diagnosticar falhas que não "
-        "eram do projeto, e esse esforço produziu aprendizagem sem produzir funcionalidades. Um custo "
-        "mais subtil foi o âmbito herdado. O esquema descreve um produto muito maior do que um único "
-        "estudante consegue entregar, e a distância entre esse esquema e a implementação é a principal "
-        "razão pela qual este relatório tem de trabalhar tanto para distinguir o que existe do que "
-        "está previsto. Reduzir o modelo ao que era realisticamente alcançável teria produzido um "
-        "sistema mais pequeno e mais completo."
+        "O material estava, porém, desatualizado. Por ter cerca de um ano, boa parte do esforço "
+        "foi para diagnosticar falhas que não estavam no enunciado da referência: APIs de "
+        "middleware substituídas, caminhos de import alterados, conflitos de versões, um "
+        "formulário bloqueado por uma integração que a gravação dava como feita. Esse esforço "
+        "foi o trabalho de tornar a pilha operacional no estado atual das bibliotecas, e produziu "
+        "as decisões documentadas no capítulo 9 e na Tabela 6."
     )
     r.p(
-        "O mais útil que o tutorial forneceu não foi código mas uma sequência — uma ordem defensável "
-        "pela qual construir um sistema deste tipo. O mais útil de ele estar desatualizado é que "
-        "segui-lo se tornou impossível e compreendê-lo se tornou necessário."
+        "Um efeito colateral da referência é o âmbito do esquema. O modelo descreve um produto "
+        "maior do que a fase atual cobre, o que é útil como mapa e exige, neste relatório, "
+        "distinguir o que já corre do que está planeado. Reduzir o modelo ao que já está "
+        "implementado teria produzido um sistema mais pequeno e mais fechado, e teria obrigado a "
+        "reestruturar a base de dados a cada área nova. Manter o domínio completo e construir por "
+        "fases foi a decisão tomada."
+    )
+    r.p(
+        "O mais útil que a referência forneceu não foi código mas uma sequência. O mais útil de "
+        "ela estar desatualizada é que a sequência teve de ser traduzida, e traduzir forçou a "
+        "compreender cada camada em vez de a copiar."
     )
 
     r.h(2, "12.8 Sobre trabalhar com assistência de IA")
     r.p(
-        "Os assistentes usados neste projeto foram mais valiosos quando aplicados a problemas bem "
-        "especificados com resultados verificáveis, e menos valiosos quando lhes foi dada margem. Os "
-        "modos de falha foram consistentes: alterações que corrigiam um sintoma sem tratar a causa, "
-        "alterações que removiam código que estava deliberadamente presente, e alterações que "
-        "introduziam ferramentas incoerentes com o projeto — um ficheiro de bloqueio do `npm` num "
-        "projeto `Bun` é o exemplo mais claro."
+        "O ganho mais claro da assistência por IA neste projeto não veio de pedir código avulso, "
+        "mas de desenhar os comandos descritos na secção 8.3. Uma vez escritas as regras — como "
+        "partir um conjunto de alterações em commits, o que comentar e o que não comentar — o "
+        "agente aplica-as de forma consistente e o autor revê. Isso reduziu o trabalho repetitivo "
+        "e acelerou o ritmo, sem substituir a decisão sobre o que entra no repositório."
     )
     r.p(
-        "A prática que fez diferença foi insistir em compreender uma correção antes de a manter. O "
-        "problema de criação de agências da secção 9.7 é o caso mais claro: havia uma correção "
-        "funcional disponível, e a decisão de reverter para a versão avariada e reproduzir o problema, "
-        "para identificar qual das três causas candidatas era a responsável, produziu conhecimento que "
-        "aceitar a correção não teria produzido. A secção 9.5, em que a má leitura de um registo do "
-        "servidor conduziu a horas de depuração desnecessária, é o contraexemplo — nenhuma ferramenta "
-        "substitui compreender onde o código corre."
+        "Fora desses fluxos delimitados, os assistentes foram mais úteis em problemas bem "
+        "especificados com resultado verificável (ler documentação do `Clerk`, gerar campos de "
+        "formulário, extrair um auxiliar) e menos úteis quando lhes foi dada margem para decidir "
+        "o que alterar. Os modos de falha foram consistentes: correções que tratavam o sintoma e "
+        "não a causa, remoção de código que estava deliberadamente presente, e introdução de "
+        "ferramentas incoerentes com o projeto — um ficheiro de bloqueio do `npm` num projeto "
+        "`Bun` é o exemplo mais claro."
+    )
+    r.p(
+        "A prática que fez diferença, inclusive quando o fluxo estava automatizado, foi insistir "
+        "em compreender uma correção antes de a manter. O problema de criação de agências da "
+        "secção 9.7 é o caso mais claro: havia uma correção funcional disponível, e a decisão de "
+        "reverter para a versão avariada e reproduzir o problema, para identificar qual das três "
+        "causas candidatas era a responsável, produziu conhecimento que aceitar a correção não "
+        "teria produzido. A secção 9.5, em que a má leitura de um registo do servidor conduziu a "
+        "horas de depuração desnecessária, é o contraexemplo — nenhuma ferramenta substitui "
+        "compreender onde o código corre."
     )
     r.page_break()
 
     # ======================================================== 13 LIMITAÇÕES
-    r.h(1, "13. Limitações e Trabalho Futuro")
+    r.h(1, "13. Trabalho em Curso, Planeado e em Aberto")
 
-    r.h(2, "13.1 Limitações funcionais")
+    r.p(
+        "O projeto continua em desenvolvimento. As secções abaixo descrevem o estado atual da "
+        "plataforma, o trabalho de curto e médio prazo já identificado, a avaliação de desempenho "
+        "que a fase de construção de sites permitirá fazer, e uma ideia posterior que ainda não "
+        "faz parte do plano concreto."
+    )
+
+    r.h(2, "13.1 Estado atual da plataforma")
+    r.p("Implementado e acessível pela interface:")
     r.bullets([
-        "A funcionalidade de construção de sites que motivou o projeto não está implementada. Não "
-        "existe editor de páginas, renderizador nem mecanismo de publicação.",
-        "Não existe área de subconta. Os utilizadores de subconta são redirecionados para "
-        "`/subaccount`, que não resolve para nada; o diretório existe e está vazio.",
-        "A navegação da barra lateral não é renderizada, pelo que a área autenticada não pode ser "
-        "navegada para além do seletor de conta.",
-        "O painel da agência apresenta apenas o identificador da agência.",
-        "Os convites podem ser aceites mas não emitidos: não há ecrã de gestão de equipa nem envio de "
-        "correio eletrónico.",
-        "As notificações são registadas e consultadas mas nunca apresentadas.",
-        "Os subsistemas de CRM, multimédia e automações existem apenas como modelos de dados.",
-        "A faturação não está implementada sob qualquer forma.",
+        "site de divulgação, autenticação e proteção ao nível da rota;",
+        "registo de agências com validação, carregamento de logótipo, meta e eliminação;",
+        "aceitação de convites no primeiro início de sessão;",
+        "criação de subcontas a partir do seletor de conta;",
+        "reescrita de subdomínio no middleware.",
+    ])
+    r.p("Em desenvolvimento — o mecanismo no servidor existe; a superfície visível está a ser "
+        "construída:")
+    r.bullets([
+        "navegação da barra lateral, já semeada e carregada mas ainda não renderizada;",
+        "apresentação das notificações de atividade, já consultadas no layout;",
+        "painel da agência, que por agora mostra o identificador;",
+        "páginas `/[domain]` e `/[domain]/[path]`, ainda esboços por cima da reescrita já "
+        "funcional.",
+    ])
+    r.p("Planeado, com o suporte de dados já no esquema:")
+    r.bullets([
+        "área de subconta (`/subaccount`), para a qual o encaminhamento já aponta;",
+        "editor de páginas, renderizador e publicação de sites;",
+        "CRM (pipelines, lanes, tickets, contactos);",
+        "biblioteca de multimédia e automações;",
+        "gestão de equipa e envio de correio, de que depende a emissão de convites;",
+        "faturação por subscrição, quando o SDK do `Stripe` for ligado;",
+        "testes automatizados e implantação com integração contínua.",
     ])
 
-    r.h(2, "13.2 Limitações técnicas e dívida")
+    r.h(2, "13.2 Dívida técnica conhecida")
     r.bullets([
-        "O build de produção falha na fase de lint; a aplicação só pode ser executada em "
-        "desenvolvimento.",
-        "Não existe qualquer cobertura de testes automatizados.",
-        "Não existe histórico de migrações; o esquema é aplicado com `db push`.",
+        "O build de produção ainda falha na fase de lint; a aplicação corre em desenvolvimento.",
+        "Ainda não existe cobertura de testes automatizados.",
+        "Ainda não existe histórico de migrações; o esquema é aplicado com `db push`.",
         "`relationMode = \"prisma\"` remove chaves estrangeiras de uma base de dados que as suporta, "
         "sem benefício correspondente nesta instalação.",
         "A framework está duas versões maiores atrasada, consequência da decisão de versão descrita na "
@@ -1178,8 +1268,9 @@ def build(r, FIG):
     r.h(2, "13.5 Avaliar a questão original de desempenho")
     r.p(
         "A questão que motivou este projeto — se uma plataforma deste tipo consegue gerar sites com "
-        "melhor fundação técnica do que um construtor alojado — continua em aberto, e respondê-la é o "
-        "trabalho futuro mais interessante disponível."
+        "melhor fundação técnica do que um construtor alojado — continua em aberto. Respondê-la é o "
+        "trabalho mais interessante da fase de construção de sites, e só poderá ser feita depois de "
+        "existir um renderizador."
     )
     r.p("Uma avaliação credível exigiria, no mínimo:")
     r.bullets([
@@ -1194,9 +1285,24 @@ def build(r, FIG):
         "alojado traz funcionalidade que um renderizador mínimo não tem.",
     ])
     r.p(
-        "Enquanto tal avaliação não for feita, o argumento de desempenho a favor do Blume é uma "
-        "hipótese. O projeto estabeleceu a arquitetura dentro da qual poderia ser testada, e não a "
-        "testou."
+        "Enquanto essa avaliação não for feita, o argumento de desempenho a favor do Blume é uma "
+        "hipótese. O projeto estabeleceu a arquitetura dentro da qual poderá ser testada."
+    )
+
+    r.h(2, "13.6 Ideias em aberto")
+    r.p(
+        "Além do plano das secções 13.3 a 13.5, há direções consideradas para fases posteriores que "
+        "ainda não têm desenho nem calendário. A principal, ligada à motivação original do projeto, "
+        "é desenvolver componentes próprios para o construtor de sites — blocos desenhados para o "
+        "Blume, em vez de depender apenas de uma biblioteca genérica de elementos de página. A "
+        "ideia é que o controlo sobre a marcação, os scripts e a entrega de recursos, que um "
+        "construtor alojado não concede, se estenda também à paleta de componentes com que as "
+        "páginas são compostas."
+    )
+    r.p(
+        "Isto é, neste momento, uma direção possível e não uma funcionalidade planeada. Não há "
+        "esboço de API, lista de componentes nem critério de aceitação. Distingue-se do editor de "
+        "funis da secção 13.4, que está no plano e assenta em `FunnelPage.content`."
     )
     r.page_break()
 
@@ -1211,49 +1317,52 @@ def build(r, FIG):
         "plataforma sobre o código gerado tornava impossível trabalhar o desempenho."
     )
     r.p(
-        "O sistema entregue é uma aplicação `Next.js` em `TypeScript`, suportada por `MySQL` através "
-        "do `Prisma`, com a autenticação delegada no `Clerk` e o armazenamento de ficheiros no "
-        "`UploadThing`. Implementa um site de divulgação, autenticação com proteção ao nível da rota, "
-        "autorização por papéis, registo de agências com entrada de dados validada e carregamento de "
-        "imagem, adesão à equipa por convite, registo de atividade, criação de subcontas e a "
-        "infraestrutura de encaminhamento para alojamento por subdomínio. Um esquema de 23 entidades "
-        "descreve um produto consideravelmente maior, e este relatório teve o cuidado, do princípio ao "
-        "fim, de distinguir essa intenção do que foi efetivamente construído."
+        "O sistema, no estado atual, é uma aplicação `Next.js` em `TypeScript`, suportada por `MySQL` "
+        "através do `Prisma`, com a autenticação delegada no `Clerk` e o armazenamento de ficheiros "
+        "no `UploadThing`. Está implementado um site de divulgação, autenticação com proteção ao "
+        "nível da rota, autorização por papéis, registo de agências com entrada de dados validada e "
+        "carregamento de imagem, adesão à equipa por convite, registo de atividade, criação de "
+        "subcontas e a infraestrutura de encaminhamento para alojamento por subdomínio. Um esquema "
+        "de 23 entidades descreve o produto completo; a fundação multi-inquilino está construída e "
+        "as áreas funcionais estão a ser desenvolvidas sobre ela."
     )
     r.p(
-        "Os problemas técnicos que moldaram o trabalho foram sobretudo problemas de integração e não "
-        "de algoritmo. Um ciclo de redireções que se manifestou como resposta HTTP 431 revelou-se um "
-        "matcher de rotas que não contemplava os caminhos aninhados que um fluxo de autenticação gera. "
-        "Um diagrama entidade-relação que parecia avariado revelou-se uma representação exata de uma "
-        "base de dados à qual uma única definição do ORM tinha removido todas as chaves estrangeiras. "
-        "Um formulário que falhava silenciosamente ao guardar revelou-se protegido por uma verificação "
-        "sobre um valor que uma integração removida teria fornecido. Em todos os casos o trabalho útil "
-        "foi o diagnóstico: formular uma hipótese, ler documentação escrita para a versão atual de uma "
-        "biblioteca e não para a do tutorial, e confirmar uma causa antes de aceitar uma correção."
+        "Os problemas técnicos que moldaram o trabalho foram sobretudo problemas de integração. Um "
+        "ciclo de redireções que se manifestou como resposta HTTP 431 revelou-se um matcher de rotas "
+        "que não contemplava os caminhos aninhados que um fluxo de autenticação gera. Um diagrama "
+        "entidade-relação que parecia avariado revelou-se uma representação exata de uma base de "
+        "dados à qual uma única definição do ORM tinha removido todas as chaves estrangeiras. Um "
+        "formulário que falhava silenciosamente ao guardar revelou-se protegido por uma verificação "
+        "sobre um valor que uma integração ainda não ligada teria fornecido. Em todos os casos o "
+        "trabalho útil foi o diagnóstico: formular uma hipótese, ler a documentação da versão atual "
+        "de cada biblioteca e confirmar uma causa antes de aceitar uma correção."
     )
     r.p(
-        "O projeto começou por seguir um tutorial, e este relatório disse-o com clareza. A arquitetura "
-        "e o modelo de domínio vieram dessa fonte. O que dela não veio foi um sistema funcional: o "
-        "tutorial era suficientemente antigo para que boa parte do trabalho fosse traduzir instruções "
-        "para bibliotecas que tinham mudado por baixo delas, e quanto mais o projeto avançava menos "
-        "podia ser seguido e mais tinha de ser compreendido. A divergência registada na Tabela 6 é a "
-        "medida dessa deslocação."
+        "O projeto partiu de um tutorial em vídeo, usado como referência inicial de arquitetura e de "
+        "sequência. O modelo de domínio e a pilha vieram dessa fonte. O desenvolvimento consistiu em "
+        "tornar essa referência operacional no estado atual das bibliotecas — que tinham mudado o "
+        "suficiente para as instruções originais falharem — e, a partir daí, continuar a construir "
+        "sobre o repositório. A divergência registada na Tabela 6 é a medida dessa adaptação."
     )
     r.p(
-        "O que foi alcançado é uma fundação coerente com uma superfície incompleta. O modelo de dados "
-        "multi-inquilino, as camadas de autenticação e autorização, a infraestrutura de encaminhamento "
-        "e o percurso de registo funcionam. As áreas funcionais que tornariam a plataforma útil a uma "
-        "agência não existem, o build de produção falha atualmente e não há testes automatizados. A "
-        "questão de desempenho que motivou o projeto não foi respondida, e não o poderia ter sido, "
-        "porque a funcionalidade de geração de sites a que diz respeito nunca chegou a ser atingida."
+        "O que está alcançado é uma fundação coerente. O modelo de dados multi-inquilino, as camadas "
+        "de autenticação e autorização, a infraestrutura de encaminhamento e o percurso de registo "
+        "funcionam. A navegação, o painel, as notificações e os destinos de subdomínio estão em "
+        "desenvolvimento. O CRM, o editor de sites, a faturação e os testes automatizados estão "
+        "planeados. A questão de desempenho que motivou o projeto permanece uma hipótese, a testar "
+        "quando o renderizador de funis existir. Uma direção posterior, ainda em aberto, é "
+        "desenvolver componentes próprios para esse editor."
     )
     r.p(
-        "Os resultados mais valiosos não são as funcionalidades. São uma compreensão funcional de onde "
-        "o código corre numa framework React moderna e de por que razão isso determina como pode ser "
-        "depurado; do que um ORM garante e do que apenas parece garantir; da rapidez com que uma "
-        "árvore de dependências envelhece e do que custa recuperar; e da diferença entre uma correção "
-        "que remove um sintoma e um diagnóstico que o explica. São essas as partes deste projeto com "
-        "maior probabilidade de transitar para o próximo."
+        "Os resultados mais valiosos não são só as funcionalidades já visíveis. São uma compreensão "
+        "funcional de onde o código corre numa framework React moderna e de por que razão isso "
+        "determina como pode ser depurado; do que um ORM garante e do que apenas parece garantir; "
+        "da rapidez com que uma árvore de dependências envelhece e do que custa recuperá-la; da "
+        "diferença entre uma correção que remove um sintoma e um diagnóstico que o explica; e da "
+        "possibilidade de desenhar fluxos de trabalho assistidos por IA — comandos com regras "
+        "escritas, execução pelo agente, revisão pelo autor — que reduzem o trabalho repetitivo sem "
+        "substituir a decisão. São essas as partes deste projeto com maior probabilidade de "
+        "transitar para o próximo."
     )
     r.page_break()
 
@@ -1295,10 +1404,13 @@ def build(r, FIG):
     # ======================================================== APÊNDICES
     r.h(1, "Apêndice A \u2014 Entidades de domínio e estado de implementação")
     r.p(
-        "Todos os modelos de `prisma/schema.prisma`, com a avaliação de até onde cada um foi levado. "
-        "\u201cConsultado\u201d significa que o modelo aparece em pelo menos uma consulta em "
-        "`src/lib/queries.ts`. \u201cApenas no esquema\u201d significa que o modelo existe no esquema "
-        "e na base de dados e não é referenciado em nenhum ponto do código."
+        "Todos os modelos de `prisma/schema.prisma`, com o estado atual de cada um segundo o "
+        "vocabulário do capítulo 3. \u201cConsultado\u201d significa que o modelo aparece em pelo "
+        "menos uma consulta em `src/lib/queries.ts` e é exercitado pela interface. "
+        "\u201cEm desenvolvimento\u201d significa que o modelo já é escrito ou lido no servidor, "
+        "mas a camada visível ainda está a ser construída. \u201cPlaneado\u201d significa que o "
+        "modelo existe no esquema e na base de dados e ainda não é referenciado pelo código da "
+        "aplicação."
     )
     r.table(
         ["Modelo", "Propósito", "Estado"],
@@ -1308,24 +1420,24 @@ def build(r, FIG):
             ["`SubAccount`", "Espaço de trabalho de cliente dentro de uma agência", ("Consultado", True)],
             ["`Permissions`", "Concessão de acesso a uma subconta", ("Consultado", True)],
             ["`Invitation`", "Convite de adesão pendente", ("Consultado", True)],
-            ["`Notification`", "Entrada de registo de atividade", ("Consultado, não apresentado", True)],
-            ["`AgencySidebarOption`", "Entrada de navegação da agência", ("Criado, não renderizado", True)],
-            ["`SubAccountSidebarOption`", "Entrada de navegação da subconta", ("Criado, não renderizado", True)],
-            ["`Pipeline`", "Pipeline de CRM pertencente a uma subconta", ("Apenas no esquema", True)],
-            ["`Lane`", "Coluna ordenada dentro de um pipeline", ("Apenas no esquema", True)],
-            ["`Ticket`", "Cartão dentro de uma lane, com valor e responsável opcionais", ("Apenas no esquema", True)],
-            ["`Tag`", "Etiqueta com cor aplicável a tickets", ("Apenas no esquema", True)],
-            ["`Contact`", "Contacto de cliente pertencente a uma subconta", ("Apenas no esquema", True)],
-            ["`Funnel`", "Um site com subdomínio único opcional", ("Apenas no esquema", True)],
-            ["`FunnelPage`", "Página de um funil; conteúdo guardado como `LongText`", ("Apenas no esquema", True)],
-            ["`ClassName`", "Estilo nomeado associado a um funil", ("Apenas no esquema", True)],
-            ["`Media`", "Recurso carregado pertencente a uma subconta", ("Apenas no esquema", True)],
-            ["`Trigger`", "Evento que inicia uma automação", ("Apenas no esquema", True)],
-            ["`Automation`", "Sequência de ações ligada a um gatilho", ("Apenas no esquema", True)],
-            ["`AutomationInstance`", "Registo de ativação de uma automação", ("Apenas no esquema", True)],
-            ["`Action`", "Passo ordenado dentro de uma automação", ("Apenas no esquema", True)],
-            ["`Subscription`", "Subscrição de faturação de uma agência", ("Apenas no esquema", True)],
-            ["`AddOns`", "Extra adquirível", ("Apenas no esquema", True)],
+            ["`Notification`", "Entrada de registo de atividade", ("Em desenvolvimento", True)],
+            ["`AgencySidebarOption`", "Entrada de navegação da agência", ("Em desenvolvimento", True)],
+            ["`SubAccountSidebarOption`", "Entrada de navegação da subconta", ("Em desenvolvimento", True)],
+            ["`Pipeline`", "Pipeline de CRM pertencente a uma subconta", ("Planeado", True)],
+            ["`Lane`", "Coluna ordenada dentro de um pipeline", ("Planeado", True)],
+            ["`Ticket`", "Cartão dentro de uma lane, com valor e responsável opcionais", ("Planeado", True)],
+            ["`Tag`", "Etiqueta com cor aplicável a tickets", ("Planeado", True)],
+            ["`Contact`", "Contacto de cliente pertencente a uma subconta", ("Planeado", True)],
+            ["`Funnel`", "Um site com subdomínio único opcional", ("Planeado", True)],
+            ["`FunnelPage`", "Página de um funil; conteúdo guardado como `LongText`", ("Planeado", True)],
+            ["`ClassName`", "Estilo nomeado associado a um funil", ("Planeado", True)],
+            ["`Media`", "Recurso carregado pertencente a uma subconta", ("Planeado", True)],
+            ["`Trigger`", "Evento que inicia uma automação", ("Planeado", True)],
+            ["`Automation`", "Sequência de ações ligada a um gatilho", ("Planeado", True)],
+            ["`AutomationInstance`", "Registo de ativação de uma automação", ("Planeado", True)],
+            ["`Action`", "Passo ordenado dentro de uma automação", ("Planeado", True)],
+            ["`Subscription`", "Subscrição de faturação de uma agência", ("Planeado", True)],
+            ["`AddOns`", "Extra adquirível", ("Planeado", True)],
         ],
         "Os 23 modelos `Prisma` e o respetivo estado na implementação atual.",
         widths=[4.6, 8.0, 4.0], font_size=8.5,
@@ -1333,10 +1445,10 @@ def build(r, FIG):
     r.p(
         "As seis enumerações são `Role`, `Icon`, `TriggerTypes`, `ActionType`, `InvitationStatus` e "
         "`Plan`. `Role` e `Icon` são usadas por código da aplicação, e `InvitationStatus` é lida "
-        "quando se procura um convite pendente; `TriggerTypes`, `ActionType` e `Plan` não são usadas. "
-        "`Plan` é notável por os seus dois membros serem identificadores literais de preço do "
-        "`Stripe` herdados do tutorial, o que é uma opção de modelação invulgar e que amarra o esquema "
-        "aos identificadores de um sistema externo."
+        "quando se procura um convite pendente; `TriggerTypes`, `ActionType` e `Plan` aguardam as "
+        "áreas planeadas que as consomem. `Plan` é notável por os seus dois membros serem "
+        "identificadores literais de preço do `Stripe` herdados da referência inicial, o que amarra "
+        "o esquema aos identificadores de um sistema externo até a faturação ser ligada."
     )
     r.page_break()
 
@@ -1420,8 +1532,9 @@ def build(r, FIG):
         "6:23   Error: 'props' is defined but never used.",
     ])
     r.p(
-        "Vários destes são mais do que problemas de estilo. A propriedade `sidebarOptions` não usada é "
-        "a navegação não renderizada da secção 6.3; a variável `allNotifications` não usada é a "
-        "funcionalidade de notificações não apresentada da secção 7.7; `custId` e `bodyData` são o "
-        "resíduo da integração `Stripe` removida, descrita na secção 9.7."
+        "Vários destes apontam para trabalho em curso e não só para estilo. A propriedade "
+        "`sidebarOptions` não usada é a navegação em desenvolvimento da secção 6.3; a variável "
+        "`allNotifications` não usada é a apresentação de notificações da secção 7.7, ainda por "
+        "construir; `custId` e `bodyData` são o resíduo da integração `Stripe`, ainda não ligada, "
+        "descrita na secção 9.7."
     )

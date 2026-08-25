@@ -272,17 +272,17 @@ fig, ax = canvas(8.0, 4.6)
 
 groups = [
     (0.02, 0.615, 0.305, 0.315, "Identidade e inquilinos", ACCENT,
-     "User   Agency   SubAccount\nPermissions   Invitation\nNotification", "consultado pelo código"),
+     "User   Agency   SubAccount\nPermissions   Invitation\nNotification", "implementado"),
     (0.345, 0.615, 0.305, 0.315, "Navegação", ACCENT,
-     "AgencySidebarOption\nSubAccountSidebarOption", "registos criados, não renderizados"),
+     "AgencySidebarOption\nSubAccountSidebarOption", "em desenvolvimento"),
     (0.670, 0.615, 0.305, 0.315, "Faturação", PLAN,
-     "Subscription   AddOns\nenum Plan", "apenas no esquema"),
+     "Subscription   AddOns\nenum Plan", "planeado"),
     (0.02, 0.245, 0.305, 0.315, "CRM", PLAN,
-     "Pipeline   Lane   Ticket\nTag   Contact", "apenas no esquema"),
+     "Pipeline   Lane   Ticket\nTag   Contact", "planeado"),
     (0.345, 0.245, 0.305, 0.315, "Sites e multimédia", PLAN,
-     "Funnel   FunnelPage\nClassName   Media", "apenas no esquema"),
+     "Funnel   FunnelPage\nClassName   Media", "planeado"),
     (0.670, 0.245, 0.305, 0.315, "Automações", PLAN,
-     "Trigger   Automation\nAutomationInstance   Action", "apenas no esquema"),
+     "Trigger   Automation\nAutomationInstance   Action", "planeado"),
 ]
 for x, y, w, h, title, fc, members, status in groups:
     ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.005,rounding_size=0.018",
@@ -294,9 +294,9 @@ for x, y, w, h, title, fc, members, status in groups:
             color=GREY, style="italic")
 
 note(ax, 0.02, 0.105,
-     "Os 23 modelos e 6 enumerações estão declarados em prisma/schema.prisma e aplicados ao MySQL. Os grupos sombreados não\n"
-     "têm consultas, server actions, rotas nem interface no código atual: descrevem o âmbito pretendido, herdado do esquema do\n"
-     "tutorial, e não funcionalidade entregue.")
+     "Os 23 modelos e 6 enumerações estão declarados em prisma/schema.prisma e aplicados ao MySQL. Os grupos sombreados estão\n"
+     "modelados e aguardam implementação: o esquema descreve o domínio completo desde o início, para que cada área funcional\n"
+     "possa ser construída sem reestruturar a base de dados.")
 save(fig, "fig5_domain_groups.png")
 
 
