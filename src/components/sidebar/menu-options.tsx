@@ -276,7 +276,7 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                     return (
                       <CommandItem
                         key={sidebarOption.id}
-                        className="md:w-[340px] w-full"
+                        className="w-full cursor-pointer hover:bg-primary hover:text-primary-foreground hover:font-bold data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:font-bold"
                       >
                         <Link
                           href={sidebarOption.link}
