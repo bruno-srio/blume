@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Agency, AgencySidebarOption, SubAccount, SubAccountSidebarOption } from '@/generated/prisma'
 import { Menu, PlusCircleIcon } from 'lucide-react'
+import { icons } from '@/lib/constants'
 import { Button } from '../ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '../ui/sheet'
 import Image from 'next/image'
@@ -15,6 +16,7 @@ import Link from 'next/link'
 import CustomModal from '../global/custom-modal'
 import { useModal } from '@/providers/modal-provider'
 import SubAccountDetails from '../forms/subaccount-details'
+import { Separator } from '../ui/separator'
 
 
 
@@ -254,6 +256,42 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
               </Command>
             </PopoverContent>
           </Popover>
+          <p className="text-muted-foreground text-xs mb-2">MENU LINKS</p>
+          <Separator className="mb-4" />
+          <nav className="relative">
+            <Command className="rounded-lg overflow-visible bg-transparent">
+              <CommandInput placeholder="Search..." />
+              <CommandList className="p-2 overflow-visible">
+                <CommandEmpty>No Results Found</CommandEmpty>
+                <CommandGroup className="overflow-visible">
+                  {sidebarOptions.map((sidebarOption) => {
+                    let val;
+                    const result = icons.find(
+                      (icon) => icon.value === sidebarOption.icon
+                    );
+                    if (result) {
+                      const IconComponent = result.path;
+                      val = <IconComponent />;
+                    }
+                    return (
+                      <CommandItem
+                        key={sidebarOption.id}
+                        className="md:w-[340px] w-full"
+                      >
+                        <Link
+                          href={sidebarOption.link}
+                          className="flex items-center gap-2 hover:bg-transparent rounded-md transition-all md:w-full"
+                        >
+                          {val}
+                          <span>{sidebarOption.name}</span>
+                        </Link>
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </nav>
         </div>
 
       </SheetContent>
