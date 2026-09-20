@@ -27,6 +27,9 @@ yarn-debug.log*
 yarn-error.log*
 bun-debug.log*
 
+# report build scratch (LibreOffice home, venv, PDF renders)
+.report-tmp/
+
 # local env files
 .env
 .env.local
