@@ -28,6 +28,7 @@ import Video from "@/components/icons/video_recorder";
 import Wallet from "@/components/icons/wallet";
 import Warning from "@/components/icons/warning";
 
+// Landing-page plans. priceId is the Stripe price — Starter is empty until that's implemented.
 export const pricingCards = [
   {
     title: "Starter",

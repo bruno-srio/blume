@@ -7,6 +7,7 @@ import AgencyDetails from '@/components/forms/agency-details'
 
 const Page = async ({searchParams}: {
   searchParams: {plan:Plan; state:string; code:string}}) => {
+  // If already in an agency, send them to agency dashboard. If no agency yet, show the create form.
   const agencyId = await verifyAndAcceptInvitation()
   console.log('AGENCY ID', agencyId)
 
@@ -20,6 +21,7 @@ const Page = async ({searchParams}: {
         return redirect(`/agency/${agencyId}/billing?plan=${searchParams.plan}`)
       }
       if (searchParams.state) {
+        // Stripe Connect sends back with `path___agencyId` in `state` that's why we need to split it.
         const statePath = searchParams.state.split('___')[0];
         const stateAgencyId = searchParams.state.split('___')[1];
         if (!stateAgencyId) return <div>Not authorized</div>

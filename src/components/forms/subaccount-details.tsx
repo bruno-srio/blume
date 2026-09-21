@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { saveActivityLogsNotification, upsertSubAccount } from '@/lib/queries'
 import { useModal } from '@/providers/modal-provider'
 
+// Create/edit a subaccount. Lives in a modal from the sidebar switcher.
 type Props = {
   agencyDetails: Agency
   details?: Partial<SubAccount>
@@ -89,6 +90,7 @@ const SubAccountDetails = ({
 
   const handleSubmit = async (values: z.infer<typeof FormSchema>) => {
     try {
+      // New subaccount gets a fresh uuid; existing ones keep their id.
       const response = await upsertSubAccount({
         id: details?.id ? details.id : v4(),
         address: values.address,
@@ -118,6 +120,7 @@ const SubAccountDetails = ({
         description: 'Successfully saved your subaccount details.',
       })
 
+      // Close the sidebar modal, then refresh so the switcher picks up the new account.
       setClose()
       return router.refresh()
     } catch (error) {

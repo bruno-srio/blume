@@ -50,6 +50,7 @@ const sheetVariants = cva(
 )
 
 interface CustomSheetContentProps {
+  // Desktop sidebar stays open, so we hide the X. Mobile drawer still needs it.
   showX?: boolean
 }
 

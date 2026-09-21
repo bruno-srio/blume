@@ -36,6 +36,7 @@ export default function Home() {
             width={1200}
             className="rounded-tl-2xl rounded-tr-2xl border-2 border-muted"
             />
+            {/* Fade the preview into the page background so the screenshot doesn't have a hard bottom edge. */}
             <div className="bottom-0 top-[50%] bg-gradient-to-t dark:from-background left-0 right-0 absolute"></div>
         </div>
       </section>
@@ -47,7 +48,7 @@ export default function Home() {
         </p>
         <div className="flex justify-center gap-4 flex-wrap mt-6">
           {pricingCards.map((card) => (
-            //WIP: Wire up  free product from Stripe
+            // WIP: Wire up the free product from Stripe. Highlight is hardcoded to Unlimited Saas for now.
             <Card
               key={card.title}
               className={clsx("w-[300px] flex flex-col justify-between border-2 ", {

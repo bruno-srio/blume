@@ -7,6 +7,7 @@ import { User } from '../generated/prisma/client'
 import { SubAccount, Notification, Agency, Plan } from '../generated/prisma/index';
 
 
+// Logged-in user plus agency, subaccounts, sidebar links, and permissions - all the data the sidebar needs.
 export const getAuthUserDetails = async () => {
   const user = await currentUser();
   if (!user) {
@@ -52,6 +53,7 @@ const getUser = async (authUser: any, subaccountId?: string) => {
   });
 };
 
+// Activity feed. Can run without a Clerk session (e.g. later webhooks), look up the user via the subaccount.
 export const saveActivityLogsNotification = async ({
   agencyId,
   description,
@@ -63,7 +65,6 @@ export const saveActivityLogsNotification = async ({
 }) => {
   const authUser = await currentUser();
   let userData;
-  // console.log('authUser', authUser);
 
   if (!authUser) {
     const response = await db.user.findFirst({
@@ -86,6 +87,7 @@ export const saveActivityLogsNotification = async ({
     return;
   }
 
+  // Notifications always hang off an agency; if only got a subaccount, search for the agency id from there.
   let foundAgencyId = agencyId;
   if (!foundAgencyId) {
     if (!subaccountId) {
@@ -97,7 +99,6 @@ export const saveActivityLogsNotification = async ({
       where: { id: subaccountId },
     });
 
-    // At times notifications are assigned to a subaccount, so we need to get the agency id from the subaccount
     if (response) foundAgencyId = response.agencyId;
   }
 
@@ -141,6 +142,7 @@ export const saveActivityLogsNotification = async ({
   }
 };
 
+// Team invites only — owners already exist from initUser / upsertAgency.
 export const createTeamUser = async (agencyId: string, user: User) => {
   if (user.role === 'AGENCY_OWNER') {
     return null
@@ -150,9 +152,11 @@ export const createTeamUser = async (agencyId: string, user: User) => {
 };
 
 
+// If this email has a pending invite, create the team user and consume it. Otherwise just return their agency.
 export const verifyAndAcceptInvitation = async () => {
   const user = await currentUser();
   if (!user) {
+    // Middleware rewrites /sign-in to /agency/sign-in.
     return redirect('/sign-in')
   }
 
@@ -215,6 +219,7 @@ export const updateAgencyDetails = async (
   return response;
 };
 
+// Owner-only. Wipe subscription/addons first so the agency delete doesn't leave orphans.
 export const deleteAgency = async (agencyId: string) => {
   const authUser = await currentUser();
   const email = authUser?.emailAddresses[0]?.emailAddress;
@@ -239,7 +244,8 @@ export const deleteAgency = async (agencyId: string) => {
   await db.agency.delete({ where: { id: agencyId } });
 };
 
-//test: this function still needs to be tested. Handle submit also needs changes in agency-details.tsx
+// Keep our User row in sync with Clerk (and copy the role into Clerk privateMetadata).
+// TODO: still needs a proper test pass from the agency form submit.
 export const initUser = async (newUser: Partial<User>) => {
   const user = await currentUser();
   if (!user) return;
@@ -266,7 +272,8 @@ export const initUser = async (newUser: Partial<User>) => {
   return userData
 }
 
-//TODO: test this function and verify data registration, gotta go now; stripe integration needs to be done too eventually
+// Create or update the agency. First create also seeds the default sidebar links.
+// TODO: Stripe plan (`price`) isn't wired yet.
 export const upsertAgency = async (agency: Agency, price?: Plan) => {
   if (!agency.companyEmail) return null;
   try {
@@ -337,6 +344,7 @@ export const getNotifications = async (agencyId: string) => {
   }
 };
 
+// Create or update a subaccount. First create: give the agency owner access and seed its menu links.
 export const upsertSubAccount = async (subAccount: SubAccount) => {
   if (!subAccount.companyEmail) return null;
 

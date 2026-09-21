@@ -92,10 +92,8 @@ const AgencyDetails = ({ data }: Props) => {
 
   useEffect(() => {
     if (data) {
-      // Merge over current values since `data` may be partial;
-      // a plain reset(data) would clear other fields and the `whiteLabel` boolean, breaking z.boolean().
+      // `data` can be partial (create flow only sends email). A plain reset(data) would wipe other fields breaking the form z.boolean().
       form.reset({ ...form.getValues(), ...data });
-      // form.reset(data);
     }
   }, [data]);
 
@@ -104,6 +102,7 @@ const AgencyDetails = ({ data }: Props) => {
       let newUserData;
       let custId;
       if (!data?.id) {
+        // WIP: this is for Stripe customer creation and not sent anywhere yet.
         const bodyData = {
           email: values.companyEmail,
           name: values.name,
@@ -127,7 +126,7 @@ const AgencyDetails = ({ data }: Props) => {
         }
       }
       newUserData = await initUser({ role: 'AGENCY_OWNER' })
-      //WIP: custId for stripe customer creation is still in progress
+      //WIP: New agencies get a fresh uuid; existing ones keep their id. Stripe customerId still in development.
       await upsertAgency({
         id: data?.id ? data.id : v4(),
         // customerId: data?.customerId || custId || "",
@@ -148,11 +147,6 @@ const AgencyDetails = ({ data }: Props) => {
       });
 
       toast.success("Created Agency");
-      //FIX: this is not working, I commented it out previous attempts
-      // if (data?.id) return router.refresh();
-      // if (response) {
-      //   return router.refresh();
-      // }
       return router.refresh();
 
     } catch (error) {
@@ -166,10 +160,11 @@ const AgencyDetails = ({ data }: Props) => {
   const handleDeleteAgency = async () => {
     if (!data?.id) return;
     setDeletingAgency(true);
-    //TODO: discontinue the subscription
+    // TODO: cancel Stripe subscription before deleting.
     try {
       await deleteAgency(data.id);
       toast.success('Agency deleted.');
+      // Agency is deleted, redirect to sign-in page so the user doesn't sit on a dead dashboard.
       await signOut({ redirectUrl: '/agency/sign-in' });
     } catch {
       toast.error('Could not delete agency.');
@@ -178,6 +173,7 @@ const AgencyDetails = ({ data }: Props) => {
   };
 
   return (
+    // AlertDialog wraps the whole card so the danger-zone trigger and confirm dialog share the same state.
     <AlertDialog>
       <Card className='w-full'>
         <CardHeader>
@@ -346,6 +342,7 @@ const AgencyDetails = ({ data }: Props) => {
                     )}
                   />
                 </div>
+                {/* Goal only exists on an already-saved agency, saves immediately without the form. */}
                 {data?.id && (
                   <div className='flex flex-col gap-2'>
                     <FormLabel>Create a Goal</FormLabel>

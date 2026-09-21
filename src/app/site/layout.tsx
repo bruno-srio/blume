@@ -6,6 +6,7 @@ import React from "react";
 
 const layout = ({ children }: { children:
     React.ReactNode }) => {
+        // Public marketing pages. Needs its own ClerkProvider because this route group is outside (main).
         return (
         <ClerkProvider appearance={{baseTheme: dark}}>
             <main className="h-full">

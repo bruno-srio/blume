@@ -25,6 +25,7 @@ const Navigation = ({ user }: Props) => {
                 />
                 <span className='text-xl font-bold'>Blume.</span>
             </aside>
+            {/* Centered without shoving the logo — that's why it's position: absolute. */}
             <nav className='hidden md:block absolute left-[50%] top-[50] transform translate-x-[-50%] translate-y-[-50%]'>
                 <ul className='flex items-center justify-center gap-8'>
                     <Link href={'#'}>Pricing</Link>
@@ -34,6 +35,7 @@ const Navigation = ({ user }: Props) => {
                 </ul>
             </nav>
             <aside className='flex gap-2 items-center'>
+                {/* Clerk shows Login or the avatar — we mount both and it picks. */}
                 <SignInButton>
                     <button className="bg-primary text-white p-2 px-4 rounded-md hover:bg-primary/80">
                         Login

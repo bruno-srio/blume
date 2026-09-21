@@ -23,7 +23,7 @@ const Sidebar = async ({ id, type }: Props) => {
 
   let sidebarLogo = user.Agency.agencyLogo || 'assets/plura-logo.svg'
 
-  // if not white label, use subaccount logo if available
+  // White-label on: subaccounts show the agency logo. Off: they get their own.
   if (!isWhiteLabel) {
     if (type === "subaccount") {
       sidebarLogo =
@@ -38,6 +38,7 @@ const Sidebar = async ({ id, type }: Props) => {
       : user.Agency.SubAccount.find((subaccount) => subaccount.id === id)
           ?.SidebarOption || []
 
+  // Switcher only lists subaccounts this user actually has access to.
   const subaccounts = user.Agency.SubAccount.filter((subaccount) =>
     user.Permissions.find(
       (permission) =>
@@ -47,7 +48,7 @@ const Sidebar = async ({ id, type }: Props) => {
 
   return (
     <>
-    {/* Desktop: forced open rail */}
+    {/* Desktop: always-open rail. Mobile: drawer the burger can toggle. */}
     <MenuOptions
       defaultOpen={true}
       subAccounts={subaccounts}
@@ -57,7 +58,7 @@ const Sidebar = async ({ id, type }: Props) => {
       user={user}
       id={id}
     />
-    {/* Mobile: uncontrolled sheet so the burger can open/close it */}
+    {/* Same sidebar, but without defaultOpen — that's the mobile drawer. */}
     <MenuOptions
       subAccounts={subaccounts}
       sidebarOptions={sidebarOpt}

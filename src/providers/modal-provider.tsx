@@ -42,8 +42,7 @@ type ModalContextType = {
     ) => {
       if (modal) {
         if (fetchData) {
-          // Merge async payload into modal context before opening so the modal can read it via useModal()
-          // Fallback on the await result, a merged object is always truthy, so || {} outside would never run
+          // Load extra data first so the modal can read it from useModal().
           setData({ ...data, ...((await fetchData()) || {}) })
         }
         setShowingModal(modal);
@@ -56,11 +55,13 @@ type ModalContextType = {
       setData({});
     };
   
+    // Same client-only trick as the sidebar — avoid a hydration flash.
     if (!isMounted) return null;
   
     return (
       <ModalContext.Provider value={{ data, setOpen, setClose, isOpen }}>
         {children}
+        {/* Whatever JSX was passed to setOpen (e.g. CustomModal) renders here. */}
         {showingModal}
       </ModalContext.Provider>
     );

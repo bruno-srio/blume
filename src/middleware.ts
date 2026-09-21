@@ -1,6 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
+// Marketing + auth + uploads can be hit without being signed in.
 const isPublicRoute = createRouteMatcher([
   '/site',
   '/agency/sign-in(.*)',
@@ -12,12 +13,12 @@ export default clerkMiddleware(async (auth, req) => {
     const url = req.nextUrl;
     const search = url.searchParams.toString();
     const pathWithSearch = `${url.pathname}${search ? `?${search}` : ''}`;
-    // Root redirect to /site
+
     if (url.pathname === '/') {
       return NextResponse.redirect(new URL('/site', req.url));
     }
 
-    // Signed-in users should not land on auth UI (Clerk redirects; avoids <SignIn/> error + wrong afterSignIn targets)
+    // Already signed in? Don't dump them on the Clerk sign-in/up screens again.
     {
       const { userId } = await auth();
       if (userId) {
@@ -36,8 +37,7 @@ export default clerkMiddleware(async (auth, req) => {
       }
     }
 
-    // Legacy/un-scoped auth paths — funnel everyone into the agency-scoped flow,
-    // which is the only Clerk <SignIn/> mount in the app.
+    // Bare /sign-in and /sign-up aren't mounted — send everyone to the agency Clerk pages.
     if (url.pathname === '/sign-in' || url.pathname === '/sign-up') {
       return NextResponse.redirect(new URL('/agency/sign-in', req.url));
     }
@@ -46,9 +46,8 @@ export default clerkMiddleware(async (auth, req) => {
       await auth.protect();
     }
 
-    // Multi-tenant routing: a request to `<tenant>.<NEXT_PUBLIC_DOMAIN>` is
-    // rewritten to `/<tenant>/<path>` so a single Next.js app can serve every
-    // agency/subaccount on its own subdomain without duplicating routes.
+    // Custom subdomain (`tenant.yourdomain`) is rewritten to `/tenant/path`
+    // so one Next app can serve every agency/subaccount site.
     const host = req.headers.get('host') || '';
     const customSubdomain = host
       .split(`${process.env.NEXT_PUBLIC_DOMAIN}`)
@@ -67,7 +66,7 @@ export default clerkMiddleware(async (auth, req) => {
 
     return NextResponse.next();
   },
-  { debug: false } // Set true to see detailed logs during dev
+  { debug: false } // flip to true if Clerk auth redirects are acting up
 );
 
 export const config = {

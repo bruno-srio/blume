@@ -20,6 +20,7 @@ import { Separator } from '../ui/separator'
 
 
 
+// defaultOpen = desktop sidebar (always visible). Without it, this is the mobile drawer.
 type Props = {
   defaultOpen?: boolean
   subAccounts: SubAccount[]
@@ -33,12 +34,12 @@ type Props = {
 const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, details, user, id }: Props) => {
   
   const { setOpen, isOpen: isModalOpen } = useModal()
-  // Avoid hydration mismatch / flash: Sheet markup only after client mount.
+  // Wait for the client so the drawer doesn't flash the wrong markup on first load.
   const [isMounted, setIsMounted] = useState(false)
-  // Controlled so Create Sub Account can dismiss the switcher before the modal opens (avoids z-[200] popover over the dialog).
+  // Close the account switcher ourselves before opening the create-account modal (otherwise the menu covers it).
   const [popoverOpen, setPopoverOpen] = useState(false)
 
-  // Force open for the persistent desktop rail; omit for the mobile sheet so it stays uncontrolled.
+  // Desktop: force the sidebar open. Mobile: leave it alone so the burger can open/close it.
   const openState = useMemo(
     () => (defaultOpen ? { open: true } : {}),
     [defaultOpen]
@@ -56,7 +57,7 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
       modal={false}
       {...openState}
       >
-      {/* Hide burger while a global modal is open — it sits at z-100 above Dialog (z-50). */}
+      {/* Hide the burger while a modal is open, otherwise it sits on top of the dialog. */}
       {!isModalOpen && (
         <SheetTrigger
           asChild
@@ -68,20 +69,20 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
         </SheetTrigger>
       )}
       <SheetContent 
-        // Desktop rail stays open — hide the close (X); mobile sheet needs it.
+        // Desktop stays open, so no X. Mobile drawer needs the close button.
         showX={!defaultOpen}
         side='left'
         className={clsx(
           'bg-background/80 backdrop-blur-xl fixed top-0 border-r-[1px] p-6',
           {
-            // Two instances render (desktop + mobile); only one is visible per breakpoint.
+            // Two instances render (desktop + mobile); only one is visible at a time.
             'hidden md:inline-block z-0 w-[300px]': defaultOpen,
             'inline-block md:hidden z-[100] w-full': !defaultOpen,
           }
         )}
         >
         <div>
-         {/* Logo alone in AspectRatio so odd-sized uploads can't overflow into the switcher below. */}
+         {/* Keep the logo in a fixed box so a tall upload can't spill into the switcher. */}
          <AspectRatio ratio={16 / 5} className='overflow-hidden'>
           <Image 
             src={sidebarLogo} 
@@ -91,6 +92,7 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
             sizes='300px'
           />
          </AspectRatio>
+          {/* Account switcher: current agency/subaccount; click to pick another. */}
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverTrigger asChild>
               <Button 
@@ -114,18 +116,19 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                 </div>
               </Button>
             </PopoverTrigger>
-            {/* z above mobile Sheet (z-[100]) so the account menu isn't trapped under the sheet overlay. */}
+            {/* Sit above the mobile drawer so this menu isn't stuck behind it. */}
             <PopoverContent className="w-80 h-80 mt-4 z-[200]">
               <Command className="rounded-lg">
                 <CommandInput placeholder="Search Accounts..." />
                 <CommandList className="pb-16">
                   <CommandEmpty> No results found</CommandEmpty>
+                  {/* Owners/admins also get a shortcut back to the agency. */}
                   {(user?.role === "AGENCY_OWNER" ||
                     user?.role === "AGENCY_ADMIN") &&
                     user?.Agency && (
                       <CommandGroup heading="Agency">
                         <CommandItem className="!bg-transparent my-2 text-primary border-[1px] border-border p-2 rounded-md hover:!bg-muted cursor-pointer transition-all">
-                          {/* Mobile: SheetClose dismisses the drawer on navigate; desktop rail stays open. */}
+                          {/* Mobile: close the drawer on navigate. Desktop sidebar stays put. */}
                           {defaultOpen ? (
                             <Link
                               href={`/agency/${user?.Agency?.id}`}
@@ -172,6 +175,7 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                         </CommandItem>
                       </CommandGroup>
                     )}
+                  {/* Subaccounts this user can jump into. Same close-on-mobile trick as Agency above. */}
                   <CommandGroup heading="Accounts">
                     {!!subAccounts
                       ? subAccounts.map((subaccount) => (
@@ -227,6 +231,7 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                       : "No Accounts"}
                   </CommandGroup>
                 </CommandList>
+                {/* Owners/admins: close the switcher, then open the create-subaccount form. */}
                 {(user?.role === "AGENCY_OWNER" ||
                   user?.role === "AGENCY_ADMIN") && (
                   <SheetClose>
@@ -258,13 +263,15 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
           </Popover>
           <p className="text-muted-foreground text-xs mb-2">MENU LINKS</p>
           <Separator className="mb-4" />
+          {/* Searchable menu: type in the box and the links below filter, same idea as the account switcher. */}
           <nav className="relative">
             <Command className="rounded-lg overflow-visible bg-transparent">
               <CommandInput placeholder="Search..." />
-              <CommandList className="p-2 overflow-visible">
+              <CommandList className="py-4 overflow-visible">
                 <CommandEmpty>No Results Found</CommandEmpty>
                 <CommandGroup className="overflow-visible">
                   {sidebarOptions.map((sidebarOption) => {
+                    // Icon name comes from the DB as a string, match it to the actual icon component.
                     let val;
                     const result = icons.find(
                       (icon) => icon.value === sidebarOption.icon
@@ -274,6 +281,8 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                       val = <IconComponent />;
                     }
                     return (
+                      // CommandItem is the row (hover/keyboard highlight). Link is what actually goes to the page.
+                      // data-selected is how this list marks the highlighted row; hover is the regular mouse style.
                       <CommandItem
                         key={sidebarOption.id}
                         className="w-full cursor-pointer hover:bg-primary hover:text-primary-foreground hover:font-bold data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:font-bold"

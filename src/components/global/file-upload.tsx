@@ -15,6 +15,7 @@ const SIDEBAR_LOGO_HINT = 'Recommended size: 320×100 (16:5). Any size will be s
 
 const FileUpload = ({ apiEndpoint, onChange, value }: Props) => {
   const type = value?.split('.').pop()
+  // Sidebar logos preview in the same 16:5 box the rail uses, so uploads don't look cropped later.
   const isSidebarLogo =
     apiEndpoint === 'agencyLogo' || apiEndpoint === 'subaccountLogo'
 
@@ -76,6 +77,7 @@ const FileUpload = ({ apiEndpoint, onChange, value }: Props) => {
       <UploadDropzone
         endpoint={apiEndpoint}
         onClientUploadComplete={(res) => {
+          // Form only stores the URL — UploadThing already hosted the file.
           onChange(res?.[0].url)
         }}
         onUploadError={(error: Error) => {

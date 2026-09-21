@@ -18,11 +18,12 @@ type Props = {
 
 const CustomModal = ({ title, subheading, children, defaultOpen }: Props) => {
   const { isOpen, setClose } = useModal();
+  // Provider open state, or defaultOpen if you ever want it forced on (sidebar uses setOpen instead).
   const open = isOpen || !!defaultOpen;
 
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!next) setClose(); }}>
-      {/* max-h + overflow on all breakpoints so tall forms scroll on mobile; z above burger (z-100) */}
+      {/* Scroll on small screens; sit above the mobile burger (z-100). */}
       <DialogContent className="z-[110] max-h-[90vh] overflow-y-auto md:max-h-[700px] bg-card">
         <DialogHeader className="pt-8 text-left">
           <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
