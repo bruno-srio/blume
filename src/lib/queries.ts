@@ -169,7 +169,7 @@ export const verifyAndAcceptInvitation = async () => {
       agencyId: invitationExists.agencyId,
       avatarUrl: user.imageUrl,
       id: user.id,
-      name: '${user.firstName} ${user.lastName}',
+      name: `${user.firstName} ${user.lastName}`,
       role: invitationExists.role,
       createdAt: new Date(),
       updatedAt: new Date(),
