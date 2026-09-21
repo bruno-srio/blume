@@ -1,7 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-// Marketing + auth + uploads can be hit without being signed in.
+// Marketing + auth + uploads can be accessed without being signed in.
 const isPublicRoute = createRouteMatcher([
   '/site',
   '/agency/sign-in(.*)',
@@ -18,7 +18,7 @@ export default clerkMiddleware(async (auth, req) => {
       return NextResponse.redirect(new URL('/site', req.url));
     }
 
-    // Already signed in? Don't dump them on the Clerk sign-in/up screens again.
+    // Already signed in? Avoid redirecting the user to the Clerk sign-in/up screens again.
     {
       const { userId } = await auth();
       if (userId) {
@@ -37,7 +37,7 @@ export default clerkMiddleware(async (auth, req) => {
       }
     }
 
-    // Bare /sign-in and /sign-up aren't mounted — send everyone to the agency Clerk pages.
+    // Legacy /sign-in and /sign-up aren't mounted - send everyone to the agency Clerk pages.
     if (url.pathname === '/sign-in' || url.pathname === '/sign-up') {
       return NextResponse.redirect(new URL('/agency/sign-in', req.url));
     }
@@ -66,7 +66,7 @@ export default clerkMiddleware(async (auth, req) => {
 
     return NextResponse.next();
   },
-  { debug: false } // flip to true if Clerk auth redirects are acting up
+  { debug: false } // flip to true if Clerk auth redirects are causing issues
 );
 
 export const config = {

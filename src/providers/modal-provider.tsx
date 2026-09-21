@@ -55,13 +55,13 @@ type ModalContextType = {
       setData({});
     };
   
-    // Same client-only trick as the sidebar — avoid a hydration flash.
+    // Same client-only workaround as the sidebar to avoid a hydration flash.
     if (!isMounted) return null;
   
     return (
       <ModalContext.Provider value={{ data, setOpen, setClose, isOpen }}>
         {children}
-        {/* Whatever JSX was passed to setOpen (e.g. CustomModal) renders here. */}
+        {/* Renders the JSX passed to setOpen (e.g. CustomModal) */}
         {showingModal}
       </ModalContext.Provider>
     );

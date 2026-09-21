@@ -219,7 +219,7 @@ export const updateAgencyDetails = async (
   return response;
 };
 
-// Owner-only. Wipe subscription/addons first so the agency delete doesn't leave orphans.
+// Owner-only. Delete subscriptions/addons first so the agency deletion doesn't leave unlinked records.
 export const deleteAgency = async (agencyId: string) => {
   const authUser = await currentUser();
   const email = authUser?.emailAddresses[0]?.emailAddress;

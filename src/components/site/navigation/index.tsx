@@ -35,7 +35,7 @@ const Navigation = ({ user }: Props) => {
                 </ul>
             </nav>
             <aside className='flex gap-2 items-center'>
-                {/* Clerk shows Login or the avatar — we mount both and it picks. */}
+                {/* Clerk shows Login or the avatar - we mount both and it picks one automatically. */}
                 <SignInButton>
                     <button className="bg-primary text-white p-2 px-4 rounded-md hover:bg-primary/80">
                         Login
