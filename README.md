@@ -24,23 +24,9 @@ Blume is a multi-tenant agency management platform — "run your agency, in one 
 
 ## Environment variables
 
-There is no `.env.example` yet — create a `.env` file in the project root with:
+Copy [`.env.example`](.env.example) to `.env` in the project root, then fill in your MySQL URL, [Clerk](https://dashboard.clerk.com) keys, and [UploadThing](https://uploadthing.com) token. `NEXT_PUBLIC_DOMAIN` is the host used by `src/middleware.ts` for subdomain rewrites (`localhost:3000` locally; your apex domain in production).
 
-```bash
-# MySQL connection string (used by prisma/schema.prisma)
-DATABASE_URL="mysql://user:password@localhost:3306/blume"
-
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
-CLERK_SECRET_KEY="sk_test_..."
-
-# UploadThing
-UPLOADTHING_TOKEN="..."
-
-# Base domain used by src/middleware.ts for subdomain -> tenant rewrites.
-# Locally this is the dev host; in production, your apex domain.
-NEXT_PUBLIC_DOMAIN="localhost:3000"
-```
+Stripe variables are listed in `.env.example` but are not implemented yet — the app does not read them.
 
 ## Getting started
 
