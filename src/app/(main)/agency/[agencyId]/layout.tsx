@@ -1,6 +1,7 @@
 import Unauthorized from '@/components/unauthorized'
 import Sidebar from '@/components/sidebar'
 import BlurPage from '@/components/global/blur-page'
+import InfoBar from '@/components/global/infobar'
 import { getNotifications } from '@/lib/queries'
 import { verifyAndAcceptInvitation } from '@/lib/queries'
 import { currentUser } from '@clerk/nextjs/server'
@@ -46,6 +47,7 @@ const layout = async ({ children, params }: Props) => {
         <Sidebar id={params.agencyId} type='agency'/>
         {/* 300px = sidebar width - don't let page content slide under the rail. */}
         <div className='md:pl-[300px]'>
+          <InfoBar notifications={allNotifications}/>
           <div className='relative'>
             <BlurPage>
               {children}
