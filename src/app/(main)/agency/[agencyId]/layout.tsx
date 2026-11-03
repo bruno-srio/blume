@@ -1,5 +1,6 @@
 import Unauthorized from '@/components/unauthorized'
 import Sidebar from '@/components/sidebar'
+import BlurPage from '@/components/global/blur-page'
 import { getNotifications } from '@/lib/queries'
 import { verifyAndAcceptInvitation } from '@/lib/queries'
 import { currentUser } from '@clerk/nextjs/server'
@@ -35,6 +36,7 @@ const layout = async ({ children, params }: Props) => {
     // Pulled here so a notification bell can hang on this layout later — not rendered yet.
     let allNotifications: any = []
     const notifications = await getNotifications(agencyId)
+
     if (notifications) {
       allNotifications = notifications
     }
@@ -43,7 +45,13 @@ const layout = async ({ children, params }: Props) => {
       <div className='h-screen overflow-hidden'>
         <Sidebar id={params.agencyId} type='agency'/>
         {/* 300px = sidebar width — don't let page content slide under the rail. */}
-        <div className='md:pl-[300px]'>{children}</div>
+        <div className='md:pl-[300px]'>
+          <div className='relative'>
+            <BlurPage>
+              {children}
+            </BlurPage>
+          </div>
+        </div>
       </div>
     )
 }
