@@ -51,8 +51,9 @@ next-env.d.ts
 /src/generated/
 /src/generated/prisma
 
-# diagrams for project planning
+# diagrams and presentations for project planning
 /diagrams
+/presentation
 
 # editor
 .vscode/
