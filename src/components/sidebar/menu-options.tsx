@@ -285,11 +285,16 @@ const MenuOptions = ({ defaultOpen, subAccounts, sidebarOptions, sidebarLogo, de
                       // data-selected is how this list marks the highlighted row; hover is the regular mouse style.
                       <CommandItem
                         key={sidebarOption.id}
-                        className="w-full cursor-pointer hover:bg-primary hover:text-primary-foreground hover:font-bold data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:font-bold"
+                        className="group w-full cursor-pointer overflow-visible hover:bg-primary hover:text-primary-foreground hover:font-bold data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:font-bold"
                       >
+                        {/* Light sits past the rail and is clipped at its left edge, so the blur only shows under the frosted page. */}
+                        <span
+                          aria-hidden
+                          className="pointer-events-none absolute top-1/2 left-[calc(100%+1.75rem+1px)] hidden h-14 w-24 -translate-y-1/2 rounded-full bg-primary opacity-0 blur-[32px] [clip-path:inset(-48px_-64px_-48px_0)] md:block group-data-[selected=true]:opacity-100"
+                        />
                         <Link
                           href={sidebarOption.link}
-                          className="flex items-center gap-2 hover:bg-transparent rounded-md transition-all md:w-full"
+                          className="relative flex items-center gap-2 hover:bg-transparent rounded-md transition-all md:w-full"
                         >
                           {val}
                           <span>{sidebarOption.name}</span>
