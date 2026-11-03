@@ -5,7 +5,7 @@ import React from 'react'
 const Layout = ({children}: {children: React.ReactNode}) => {
   // Logged-in app (agency/subaccount). Marketing site has its own ClerkProvider in site/layout.
   return (
-    <ClerkProvider appearance={{baseTheme: dark}}>
+    <ClerkProvider appearance={{baseTheme: dark}} afterSignOutUrl="/">
         {children}
     </ClerkProvider>
   )
