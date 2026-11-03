@@ -44,7 +44,7 @@ const layout = async ({ children, params }: Props) => {
     return (
       <div className='h-screen overflow-hidden'>
         <Sidebar id={params.agencyId} type='agency'/>
-        {/* 300px = sidebar width — don't let page content slide under the rail. */}
+        {/* 300px = sidebar width - don't let page content slide under the rail. */}
         <div className='md:pl-[300px]'>
           <div className='relative'>
             <BlurPage>
