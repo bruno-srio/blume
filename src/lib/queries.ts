@@ -3,8 +3,8 @@
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import { db } from './db'
 import { redirect } from 'next/navigation';
-import { User } from '../generated/prisma/client'
-import { SubAccount, Notification, Agency, Plan } from '../generated/prisma/index';
+import { User } from '@/generated/prisma';
+import { SubAccount, Notification, Agency, Plan } from '@/generated/prisma';
 
 
 // Logged-in user plus agency, subaccounts, sidebar links, and permissions - all the data the sidebar needs.
