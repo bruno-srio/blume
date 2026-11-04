@@ -423,3 +423,21 @@ export const upsertSubAccount = async (subAccount: SubAccount) => {
     console.log(error);
   }
 };
+
+// User's subaccount permissions, for the access toggles in user-details.
+export const getUserPermissions = async (userId: string) => {
+  const response = await db.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      Permissions: {
+        include: {
+          SubAccount: true,
+        },
+      },
+    },
+  });
+
+  return response;
+};
