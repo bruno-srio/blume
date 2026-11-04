@@ -51,7 +51,7 @@ const InfoBar = ({ notifications, role, className, subAccountId }: Props) => {
           <UserButton />
           <Sheet>
             <SheetTrigger>
-              <div className="rounded-full w-8 h-8 bg-primary flex items-center justify-center text-white">
+              <div className="rounded-full w-9 h-9 bg-primary flex items-center justify-center text-white">
                 <Bell size={17} />
               </div>
             </SheetTrigger>
