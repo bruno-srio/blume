@@ -1,4 +1,4 @@
-
+'use client'
 
 import { SubAccount, User } from '@/generated/prisma'
 import React, { useState, useEffect } from 'react'
@@ -22,7 +22,6 @@ type Props = {
 }
 
 // userData on the settings page, modal data.user when opened via setOpen.
-// FIXME: needs 'use client'.
 function UserDetails({ id, type, userData, subAccounts }: Props) {
     const [subAccountPermissions, setSubAccountPermissions] = useState<UserWithPermissionsAndSubAccounts | null>(null)
     const { data, setClose } = useModal()
