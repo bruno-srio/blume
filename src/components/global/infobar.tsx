@@ -21,6 +21,19 @@ type Props = {
   subAccountId?: string;
 };
 
+// First + last name initials ("Alex Costa Mendes" -> "AM", "Alex" -> "A")
+const getInitials = (name: string) =>
+  name
+    .trim()
+    .split(/\s+/)
+    .filter((part) => part.length > 0)
+    .reduce(
+      (initials, part, index, parts) =>
+        index === 0 || index === parts.length - 1 ? initials + part[0] : initials,
+      "",
+    )
+    .toUpperCase();
+
 const InfoBar = ({ notifications, role, className, subAccountId }: Props) => {
   const [allNotifications, setAllNotifications] = useState(notifications);
   const [showAll, setShowAll] = useState(false);
@@ -81,8 +94,9 @@ const InfoBar = ({ notifications, role, className, subAccountId }: Props) => {
                         src={notification.User.avatarUrl}
                         alt="Profile Picture"
                       />
+                      {/* Shows user's initials if there's no avatar picture*/}
                       <AvatarFallback className="bg-primary">
-                        {notification.User.name.slice(0, 2).toUpperCase()}
+                        {getInitials(notification.User.name)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
