@@ -30,6 +30,9 @@ bun-debug.log*
 # report build scratch (LibreOffice home, venv, PDF renders)
 .report-tmp/
 
+# college report, kept locally (personal; not part of the public project yet)
+/report
+
 # local env files
 .env
 .env.local
